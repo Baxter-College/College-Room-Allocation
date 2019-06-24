@@ -1,6 +1,7 @@
 import csv
 import math
 
+ROOM_CLASSIFICATION_PATH = "dataLists/RoomClasifications.csv"
 roomList = []
 
 class Room():
@@ -28,7 +29,8 @@ class Room():
         return f"Room: {self.roomNumber}"
 
 def importRooms():
-    clasificationPath = "dataLists/RoomClasifications.csv"
+    
+    # Cleans a string where an empty cell = False, ordered means a number, otherwise value is true
     def roomClean(string, ordered):
         if string == "":
                 return False
@@ -38,7 +40,7 @@ def importRooms():
         else:
             return True
 
-    with open(clasificationPath) as file:
+    with open(ROOM_CLASSIFICATION_PATH) as file:
         reader = csv.DictReader(file)
         for row in reader:
             roomNumber = row["RoomNumber"]

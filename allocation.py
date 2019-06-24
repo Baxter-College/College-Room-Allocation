@@ -11,8 +11,25 @@
 from people import studentList, Student, findPerson, NUM_OF_SENIORS, NUM_OF_FRESHERS
 from rooms import roomList, Room, findRoom
 import math
+import csv
+
+ALLOCATION_CSV_PATH = "dataLists/allocation.csv"
 floorList = []
 
+def updateAllocationCSV():
+    includeEmptyRooms = False
+
+    with open(ALLOCATION_CSV_PATH, 'w') as file:
+        fieldNames = ["Floor","Room","zID","Occupied","Student Name","gender"]
+        writer = csv.DictWriter(file, fieldnames=fieldNames)
+        
+        writer.writeheader()
+        for room in roomList:
+            if not includeEmptyRooms and room.assigned:
+                writer.writerow({"Floor":room.floor,"Room":room.roomNumber,"Occupied":room.assigned,"zID":room.occupant.zID,"Student Name":room.occupant.name,"gender":room.occupant.gender})
+            elif includeEmptyRooms:
+                writer.writerow({"Floor":room.floor,"Room":room.roomNumber,"Occupied":room.assigned,"zID":room.occupant.zID,"Student Name":room.occupant.name,"gender":room.occupant.gender})
+        
 class Floor():
     def __init__(self, floorNumber, rooms):
         self.floorNumber = floorNumber
@@ -229,16 +246,41 @@ def allAvaliableRooms(year, gender):
     
     return avaliableRooms
 
+def fillSeniorUnavaliableRooms():
+    unassignedMaleFreshers = []
+    unassignedFemaleFreshers = []
+
+    allValidMale = allAvaliableRooms(2,'m')
+    allValidFemale = allAvaliableRooms(2,'f')
+
+    for person in studentList:
+        if person.year == 1:
+            if person.assigned == False:
+                if person.gender == 'm':
+                    unassignedMaleFreshers.append(person)
+                elif person.gender == 'f':
+                    unassignedFemaleFreshers.append(person)
+
+    for room in roomList:
+        if room not in allValidMale and room.assigned == False:
+            makeAllocation(unassignedFemaleFreshers[0], room)
+            unassignedFemaleFreshers.pop(0)
+        elif room not in allValidFemale and room.assigned == False:
+            makeAllocation(unassignedMaleFreshers[0], room)
+            unassignedMaleFreshers.pop(0)
+
 # Will return True if succsess, False if fail
-def makeAllocation(person, newRoom):
-    student = findPerson(studentList, person)
+def makeAllocation(student, newRoom):
+    if type(student) == str:
+        student = findPerson(studentList, student)
+
     if type(newRoom) == str or type(newRoom) == int:
         newRoom = findRoom(roomList, int(newRoom))
 
     if student == False or newRoom == False:
         return False
 
-    if newRoom.assigned == True:
+    if newRoom.assigned == True and newRoom.occupant.year > 1:
         return False
     
     if student.assigned == True:
@@ -247,6 +289,8 @@ def makeAllocation(person, newRoom):
     
     newRoom.assignRoom(student)
     student.assignRoom(newRoom)
+    fillSeniorUnavaliableRooms()
+    updateAllocationCSV()
     return True
 
 def createFloors():
@@ -262,4 +306,12 @@ def createFloors():
 
 if __name__ == "__main__":
     createFloors()
-    allAvaliableRooms(2, 'm')
+    updateAllocationCSV()
+
+    # print(f"601: {findRoom(roomList,601).occupant}\n602: {findRoom(roomList,602).occupant}\n603: {findRoom(roomList,603).occupant}")
+    # makeAllocation("z5293139",601)
+    # print("-------------")
+    # print(f"601: {findRoom(roomList,601).occupant}\n602: {findRoom(roomList,602).occupant}\n603: {findRoom(roomList,603).occupant}")
+    # makeAllocation("z5248853",602)
+    # print("-------------")
+    # print(f"601: {findRoom(roomList,601).occupant}\n602: {findRoom(roomList,602).occupant}\n603: {findRoom(roomList,603).occupant}")

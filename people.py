@@ -51,6 +51,8 @@ def importStudents():
     global NUM_OF_FRESHERS
     NUM_OF_FRESHERS = NUM_OF_ROOMS - NUM_OF_SENIORS
 
+
+# creates a list of example freshers, acting as example students
 def createNewStudents():
     numOfReturners = len(studentList)
     numOfFreshers = NUM_OF_ROOMS - numOfReturners
