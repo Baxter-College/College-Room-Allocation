@@ -4,6 +4,7 @@
         - Must try to keep the number of males and females on each floor even
         - For every front balc, there must be at least 2 freshers
         - Must try to keep the number of first years / second years on each floor even
+        - Try to have a set number of returners per inlet
         - Tries to keep the number of bad rooms remaining for freshers to a minimum
         
 '''
