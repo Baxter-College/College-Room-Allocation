@@ -5,13 +5,13 @@ ROOM_CLASSIFICATION_PATH = "dataLists/RoomClasifications.csv"
 roomList = []
 
 class Room():
-    def __init__(self, roomNumber, bathroom, front, balc, balcNumber, rf):
+    def __init__(self, roomNumber, bathroom, front, balc, SubDivisionNumber, rf):
         self.floor = math.floor(roomNumber/100)
         self.roomNumber = roomNumber
         self.bathroom = bathroom
         self.front = front
         self.balc = balc
-        self.balcNumber = balcNumber
+        self.SubDivisionNumber = SubDivisionNumber
         self.rf = rf
         self.assigned = False
         self.occupant = None
@@ -48,16 +48,16 @@ def importRooms():
             bathroom = row["Bathroom"]
             front = row["Front"]
             balc = row["Balc"]
-            frontBalcNumber = row["FrontBalcNumber"]
+            SubDivisionNumber = row["SubDivisionNumber"]
 
             roomNumber = roomClean(roomNumber, True)
             rf = roomClean(rf, False)
             bathroom = roomClean(bathroom, False)
             front = roomClean(front, False)
             balc = roomClean(balc, False)
-            frontBalcNumber = roomClean(frontBalcNumber, True)
+            SubDivisionNumber = roomClean(SubDivisionNumber, True)
 
-            newRoom = Room(roomNumber, bathroom, front, balc, frontBalcNumber, rf)
+            newRoom = Room(roomNumber, bathroom, front, balc, SubDivisionNumber, rf)
             roomList.append(newRoom)
 
 def findRoom(rList, roomNumber):

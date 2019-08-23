@@ -1,6 +1,6 @@
 '''
     Rules in order of importance:
-        - Tries to keep the total number of second yeas on each floor equal
+        - Tries to keep the total number of second years on each floor equal
         - Must try to keep the number of males and females on each floor even
         - For every front balc, there must be at least 2 freshers
         - Must try to keep the number of first years / second years on each floor even
@@ -30,7 +30,7 @@ def updateAllocationCSV():
                 writer.writerow({"Floor":room.floor,"Room":room.roomNumber,"Occupied":room.assigned,"zID":room.occupant.zID,"Student Name":room.occupant.name,"gender":room.occupant.gender})
             elif includeEmptyRooms:
                 writer.writerow({"Floor":room.floor,"Room":room.roomNumber,"Occupied":room.assigned,"zID":room.occupant.zID,"Student Name":room.occupant.name,"gender":room.occupant.gender})
-        
+
 class Floor():
     def __init__(self, floorNumber, rooms):
         self.floorNumber = floorNumber
