@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      body,
+      html {
+        padding: 0;
+        margin: 0;
+      }
+
+      .room {
+        fill: rgba(0, 0, 0, 0);
+      }
+      .room:hover {
+        fill: rgba(0, 0, 255, 0.4);
+        stroke: black;
+        cursor: pointer;
+      }
+      img,
+      svg {
+        position: absolute;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+      }
+      #bound {
+        display: none;
+      }
+      .taken {
+        fill: rgba(255, 0, 0, 0.4);
+      }
+    </style>
+  </head>
+  <body>
+    <img src="./floor1.png" usemap="#image-map" />
+
+    <svg
+      width="1180px"
+      height="833px"
+      viewBox="0 0 1180 833"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+    >
+      <title>rooms</title>
+      <desc>Created with Sketch.</desc>
+      <defs></defs>
+      <g
+        id="Page-1"
+        stroke="none"
+        stroke-width="1"
+        fill="none"
+        fill-rule="evenodd"
+      >
+        <g id="Artboard">
+          <g id="rooms">
+            <rect
+              class="room"
+              id="105"
+              x="723"
+              y="256"
+              width="84"
+              height="28"
+              onclick="selectRm(this)"
+            ></rect>
+            <rect
+              class="room"
+              id="106"
+              x="723"
+              y="229"
+              width="84"
+              height="28"
+              onclick="selectRm(this)"
+            ></rect>
+            <rect
+              class="room"
+              id="107"
+              x="723"
+              y="203"
+              width="84"
+              height="28"
+              onclick="selectRm(this)"
+            ></rect>
+            <rect
+              class="room"
+              id="108"
+              x="723"
+              y="175"
+              width="84"
+              height="28"
+              onclick="selectRm(this)"
+            ></rect>
+
+            <rect
+              class="room"
+              id="101"
+              x="723"
+              y="361"
+              width="84"
+              height="28"
+              onclick="selectRm(this)"
+            ></rect>
+            <rect
+              class="room"
+              id="102"
+              x="723"
+              y="333"
+              width="84"
+              height="28"
+              onclick="selectRm(this)"
+            ></rect>
+            <rect
+              class="room"
+              id="103"
+              x="723"
+              y="309"
+              width="84"
+              height="28"
+              onclick="selectRm(this)"
+            ></rect>
+            <rect
+              class="room"
+              id="104"
+              x="723"
+              y="281"
+              width="84"
+              height="28"
+              onclick="selectRm(this)"
+            ></rect>
+            <rect id="bound" x="0" y="0" width="1180" height="833"></rect>
+            <!-- <polygon
+              id="101"
+              class="room"
+              points="984,495,1074,495,1074,527,993,526"
+            /> -->
+          </g>
+        </g>
+      </g>
+    </svg>
+
+    <script>
+      function selectRm(e) {
+        console.log(e);
+        let confirmed = confirm(`Confirm selection of room ${e.id}`);
+
+        if (confirmed) {
+          console.log(e.id, "confirmed");
+          // send to server
+        }
+      }
+
+      const TAKEN = ["101", "102"];
+
+      for (room of TAKEN) {
+        let name = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "text"
+        );
+        name.innerHTML = "Name";
+        let roomNode = document.getElementById(room);
+        roomNode.setAttribute("class", "room taken");
+        roomNode.setAttribute("onclick", "");
+
+        roomNode.appendChild(name);
+      }
+    </script>
+  </body>
+</html>
