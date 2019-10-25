@@ -5,12 +5,16 @@ EQUALISE_SENIOR_INTERFLOOR_NUMBERS = True
 # Balance the genders of a floor
 EQUALISE_ONFLOOR_GENDER_BALANCE = True
 GENDER_BALANCE_PERCENTAGE_LENIENCY = 0.1
+# Equalises the number of males and females in a set of x rooms to try to alternate male and female. Odd numbers only, set to 0 to turn off
+ALTERNATING_GENDERS_ROOM_SEPERATION = 0
 # Maximum number of seniors on shared balcs
 NUMBER_OF_SENIORS_FRONT_BALC = 2
 # Keep the number of males and females on a front balc equal
 EQUALISE_ONBALC_GENDER_BALANCE = True
 # Try to keep the number of senior males/females equal (I don't think this is nessacary)
 EQUALISE_ONFLOOR_SENIOR_GENDER_BALANCE = True
+# Allocate example freshers to rooms which are unavaliable to seniors. NOTE: Unstable
+ALLOCATE_EXAMPLE_FRESHERS = False
 
 # TODO: Discuss what this code will do: if people know they will get a bad room, will they actually come back?
 
@@ -64,27 +68,31 @@ class Floor():
         
         return {"m":maleCount, "f":femaleCount}
 
+# floorNum is 1 indexed floor
 def listAvaliableRooms(floorNum, gender=None, isSenior = False):
     floor = floorList[floorNum - 1]    
     avaliableRooms = []
     
     floorSeniorCapacity = seniorCapacity(floorNum)
-    numOfRooms = len(floor.rooms)
+    
+    # minus 1 to ignore RF room
+    numOfRooms = len(floor.rooms) - 1
 
     if EQUALISE_SENIOR_INTERFLOOR_NUMBERS and isSenior:
         floorSeniorCount = floor.numOfSeniors
-
         if floorSeniorCount > floorSeniorCapacity:
             return avaliableRooms
     
     if EQUALISE_ONFLOOR_SENIOR_GENDER_BALANCE and isSenior:
         genderCount = floor.numOfGender(isSenior=True)[gender]
 
-        if ((floorSeniorCapacity - genderCount)/floorSeniorCapacity) > (0.5 + GENDER_BALANCE_PERCENTAGE_LENIENCY):
+
+        if ((floorSeniorCapacity - genderCount)/floorSeniorCapacity) < (0.5 - GENDER_BALANCE_PERCENTAGE_LENIENCY):
             return avaliableRooms
 
     if EQUALISE_ONFLOOR_GENDER_BALANCE:
         genderCount = floor.numOfGender()[gender]
+        
         
         if (genderCount/numOfRooms) > (0.5 + GENDER_BALANCE_PERCENTAGE_LENIENCY):
             return avaliableRooms
@@ -92,9 +100,12 @@ def listAvaliableRooms(floorNum, gender=None, isSenior = False):
 
     for room in floor.rooms:
         if not room.assigned:
+            if room.rf:
+                continue
+            
             if room.front and room.balc:
                 divInfo = getDivisionInformation(floorNum, room.SubDivisionNumber)
-
+                
                 if NUMBER_OF_SENIORS_FRONT_BALC <= divInfo["numSenior"] and isSenior:
                     continue
                 
@@ -110,9 +121,12 @@ def listAvaliableRooms(floorNum, gender=None, isSenior = False):
                 
                 avaliableRooms.append(room)
                 
-
-
             else:
+                if (ALTERNATING_GENDERS_ROOM_SEPERATION != 0):
+                    surroundingCount = countAdjacentRooms(room, ALTERNATING_GENDERS_ROOM_SEPERATION)
+                    if (surroundingCount[gender]/ALTERNATING_GENDERS_ROOM_SEPERATION > 0.5):
+                        continue
+
                 avaliableRooms.append(room)
     
     return avaliableRooms
@@ -149,18 +163,51 @@ def getDivisionInformation(floorNum, division):
 
             if room.assigned == False:
                 numAvaliable += 1
-            if room.occupant.gender == 'm':
-                numMale += 1
-            if room.occupant.gender == 'f':
-                numFemale += 1
-            if room.occupant.year > 1:
-                numSenior += 1
-            if room.occupant.year == 1:
-                numFresh += 1
+            else:
+                if room.occupant.gender == 'm':
+                    numMale += 1
+                if room.occupant.gender == 'f':
+                    numFemale += 1
+                if room.occupant.year > 1:
+                    numSenior += 1
+                if room.occupant.year == 1:
+                    numFresh += 1
 
     numOfRooms = len(divisionRooms)
 
     return {"numOfRooms":numOfRooms, "numAvaliable":numAvaliable, "numMale":numMale, "numFemale":numFemale, "numSenior":numSenior, "numFresh":numFresh}
+
+def allocateFreshers():
+    unassignedMaleFreshers = []
+    unassignedFemaleFreshers = []
+
+    allValidMale = []
+    allValidFemale = []
+
+    for floor in range(NUMBER_OF_FLOORS):
+        floorNum = floor + 1
+
+        allValidMale.extend(listAvaliableRooms(floorNum,"m",True))
+        allValidFemale.extend(listAvaliableRooms(floorNum,"f",True))
+
+
+    for person in studentList:
+        if person.year == 1:
+            if person.assigned == False:
+                if person.gender == 'm':
+                    unassignedMaleFreshers.append(person)
+                elif person.gender == 'f':
+                    unassignedFemaleFreshers.append(person)
+
+    for room in roomList:
+        if room.rf == True:
+            continue
+        elif room not in allValidMale and room.assigned == False:
+            makeAllocation(unassignedFemaleFreshers[0], room)
+            unassignedFemaleFreshers.pop(0)
+        elif room not in allValidFemale and room.assigned == False:
+            makeAllocation(unassignedMaleFreshers[0], room)
+            unassignedMaleFreshers.pop(0)
 
 
 # Will return True if succsess, False if fail
@@ -189,8 +236,46 @@ def makeAllocation(student, newRoom):
     
     newRoom.assignRoom(student)
     student.assignRoom(newRoom)
+
+    if ALLOCATE_EXAMPLE_FRESHERS:
+        allocateFreshers()
+
     updateAllocationCSV()
     return True
+
+# returns dictionary {"m":#,"f":#} of the number of males and females around and including the room
+def countAdjacentRooms(room, diameter):
+    radius = (diameter - 1)/2
+    numMale = 0
+    numFemale = 0
+
+    if ((room.roomNumber - radius) < room.floor.rooms[0].roomNumber):
+        i = room.floor.rooms[0].roomNumber
+        while (i <= room.roomNumber + radius):
+            room = findRoom(room.floor.rooms, i)
+            if (room.occupant.gender == "m"):
+                numMale += 1
+            elif (room.occupant.gender == "f"):
+                numFemale += 1
+    elif (room.roomNumber + radius > room.floor.rooms[-1].roomNumber):
+        i = room.roomNumber - radius
+        while (i <= room.floor.rooms[-1].roomNumber):
+            room = findRoom(room.floor.rooms, i)
+            if (room.occupant.gender == "m"):
+                numMale += 1
+            elif (room.occupant.gender == "f"):
+                numFemale += 1
+    else:
+        i = room.roomNumber - radius
+        while (i <= room.roomNumber + radius):
+            room = findRoom(room.floor.rooms, i)
+            if (room.occupant.gender == "m"):
+                numMale += 1
+            elif (room.occupant.gender == "f"):
+                numFemale += 1
+    
+    return {"m":numMale, "f":numFemale}
+
 
 def createFloors():
     def retDev(room):
@@ -205,8 +290,7 @@ def createFloors():
         newFloor = Floor(floorNum, newList, numDivisions)
         floorList.append(newFloor)
 
-
-
+# writes classes to CSVs
 def updateAllocationCSV():
     includeEmptyRooms = False
 
@@ -221,6 +305,7 @@ def updateAllocationCSV():
             elif includeEmptyRooms:
                 writer.writerow({"Floor":room.floor,"Room":room.roomNumber,"Occupied":room.assigned,"zID":room.occupant.zID,"Student Name":room.occupant.name,"gender":room.occupant.gender})
 
+# reads CSVs and updates classes
 def loadAllocatedCSV():
     with open(ALLOCATION_CSV_PATH) as file:
         reader = csv.DictReader(file)
@@ -235,5 +320,22 @@ if __name__ == "__main__":
     createFloors()
     loadAllocatedCSV()
 
-    for st in studentList:
-        print(st.name,"-",st.assigned)
+    for st in listAvaliableRooms(6, 'm', True):
+        print(f"{st.roomNumber} ",end='')
+    print(f"\n")
+
+    makeAllocation("z5293139",601)
+
+    for st in listAvaliableRooms(6, 'm', True):
+        print(f"{st.roomNumber} ",end='')
+    print(f"\n")
+
+
+
+    makeAllocation("z5261721",602)
+
+    for st in listAvaliableRooms(6, 'f', True):
+        print(f"{st.roomNumber} ",end='')
+    print(f"\n")
+
+        

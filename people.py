@@ -34,6 +34,7 @@ class Student():
 
 # To generate random data: https://www.generatedata.com/
 def importStudents():
+    global NUM_OF_SENIORS
     with open(STUDENT_FILE_PATH) as file:
         reader = csv.DictReader(file)
         for row in reader:
@@ -45,9 +46,11 @@ def importStudents():
 
             newStudnet = Student(zid, name, year, gender, roomPoints)
             studentList.append(newStudnet)
+            
+            if year > 1:
+                NUM_OF_SENIORS += 1
     
-    global NUM_OF_SENIORS
-    NUM_OF_SENIORS = len(studentList)
+    
     global NUM_OF_FRESHERS
     NUM_OF_FRESHERS = NUM_OF_ROOMS - NUM_OF_SENIORS
 
