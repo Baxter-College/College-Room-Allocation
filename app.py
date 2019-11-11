@@ -1,9 +1,9 @@
+#!/usr/bin/env python3
 from flask import Flask, render_template, request, json
 from allocation import listAvaliableRooms, makeAllocation, createFloors, loadAllocatedCSV
 from people import getStudentList, checkCorrectPassword, checkValidTime
 from rooms import roomOccupied
 import datetime
-import json
 
 app = Flask(__name__)
 
@@ -70,7 +70,7 @@ def get_data():
     
     allData = {"ZIDS":studentList, "MALE":maleList, "FEMALE":femaleList}
 
-    return json.dumps(allData)
+    return allData
 
 if __name__ == "__main__":
     app.run(debug=True, port=8888)
