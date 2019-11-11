@@ -5,6 +5,9 @@
 {% block content %}
     <h2>Select Rooms</h2>
     <script src="select.js"></script>
+    <script type="text/javascript">
+        get_data({{data}});
+    </script>
     <form name="room_form" onsubmit="return validate_form()" action="/rooms/submit" method="POST">
         
         <input type="text" id="zid" placeholder="enter your zid" name="zid">
@@ -19,3 +22,21 @@
         
         <input type="submit" value="secure my room">
     </form>
+    <div class="tab">
+        {% for floor, rooms in data["MALE"]}
+            <button class="tablinks unsure" onclick="viewFloor(event, {{floor}})">Floor {{floor}}</button>
+        {% endfor %}
+    </div>
+
+    {% for floor, rooms in data["MALE"] %}
+        <div id="{{floor}}" class="tabcontent">
+        <table>
+        {% for room, deets in data["MALE"][floor] %}
+            <tr id="room{{room}}" class="unsure">
+                <td name="roonum">{{room}}</td>
+                <td name="deets"></td>
+            </tr>
+        {% endfor %}
+        </table>
+        </div>
+    {% endfor %}

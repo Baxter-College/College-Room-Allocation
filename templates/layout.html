@@ -22,6 +22,52 @@
 			input[type=date].date_err {
 				background-color:rgb(202, 100, 100)
 			}
+			/* Style the tab */
+			.tab {
+				overflow: hidden;
+				border: 1px solid #ccc;
+				background-color: #f1f1f1;
+			}
+			
+			/* Style the buttons inside the tab */
+			.tab button {
+				background-color: inherit;
+				float: left;
+				border: none;
+				outline: none;
+				cursor: pointer;
+				padding: 14px 16px;
+				transition: 0.3s;
+				font-size: 17px;
+			}
+			
+			/* Change background color of buttons on hover */
+			.tab button:hover {
+				background-color: #ddd;
+			}
+			
+			/* Create an active/current tablink class */
+			.tab button.active {
+				background-color: #ccc;
+			}
+			
+			/* Style the tab content */
+			.tabcontent {
+				display: none;
+				padding: 6px 12px;
+				border: 1px solid #ccc;
+				border-top: none;
+			}
+
+			.unsure {
+				color: #ccc;
+			}
+			.available {
+				color: green;
+			}
+			.unavailable {
+				color: red;
+			}
 		</style>
 
 		<style media="screen">
@@ -34,8 +80,8 @@
 			}
 
 			.button-black {
-			  background-color: black;
-			  border-color: black;
+			background-color: black;
+			border-color: black;
 			}
 
 			.button-error {
@@ -45,11 +91,11 @@
 
 			.button-black.button-clear,
 			.button-black.button-outline {
-			  background-color: transparent;
-			  color: black;
+			background-color: transparent;
+			color: black;
 			}
 			.button-black.button-clear {
-			  border-color: transparent;
+			border-color: transparent;
 			}
 
 			input {
