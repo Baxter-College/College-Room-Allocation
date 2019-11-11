@@ -10,11 +10,12 @@ app = Flask(__name__)
 @app.before_request
 def before_request():
     #TODO: everythin that needs to be done before a request
+    # re-load from db/csv
+    # fill freshers
     pass
 
 @app.route("/rooms/select", methods=["GET"])
 def select_rooms():
-    #TODO: get the data from fucntions
     data = get_data()
 
     return render_template("select.html", data=data)
@@ -33,4 +34,4 @@ def get_data():
     return json.dumps(allData)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True, port=8888)
