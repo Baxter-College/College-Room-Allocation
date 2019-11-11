@@ -50,6 +50,11 @@ def importStudents():
             # startTime in datetime format
             startTime = row["startTime"]
 
+            if (startTime == ""):
+                startTime == 100000000000
+            else:
+                startTime = int(startTime)
+
             newStudnet = Student(zid, name, year, gender, roomPoints, password, startTime)
             studentList.append(newStudnet)
             
@@ -109,7 +114,7 @@ def createNewStudents():
             writer.writerow({"zID":zid,"StudentName":name,"year":year,"roomPoints":roomPoints,"gender":gender})
 
 
-        newStudnet = Student(zid, name, year, gender, roomPoints, "BAXTABOTISTHEBESTBOT", 0)
+        newStudnet = Student(zid, name, year, gender, roomPoints, "BAXTABOTISTHEBESTBOT", 10000000000000000)
         studentList.append(newStudnet)
 
 def getStudentList():
@@ -129,15 +134,20 @@ def findPerson(personList, zID):
 
 def checkCorrectPassword(zid, password):
     person = findPerson(studentList, zid)
-    if (person.password == password):
-        return True
+    
+    if (person != False):
+        if (person.password == password):
+            return True
     
     return False
 
 def checkValidTime(zid, time):
     person = findPerson(studentList, zid)
-    if (person.startTime <= time):
-        return False
+    if (person != False):
+        if (person.startTime <= time):
+            return False
+
+            
     return True
 
 importStudents()
