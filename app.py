@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, json
-from allocation import listAvaliableRooms, makeAllocation
+from allocation import listAvaliableRooms, makeAllocation, createFloors, loadAllocatedCSV
 from people import getStudentList, checkCorrectPassword, checkValidTime
 from rooms import roomOccupied
 import datetime
@@ -7,7 +7,8 @@ import json
 
 app = Flask(__name__)
 
-#TODO: everything that needs to be done on startup
+createFloors()
+loadAllocatedCSV()
 
 @app.before_request
 def before_request():
