@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, json
 from allocation import listAvaliableRooms, makeAllocation
-from people import getStudentList, checkCorrectPassword
+from people import getStudentList, checkCorrectPassword, checkValidTime
 from rooms import roomOccupied
 import datetime
 import json
@@ -26,26 +26,26 @@ def select_rooms():
 
     elif request.method == "POST":
         form = request.form
-        if (form["submit"] == "SUBMIT"):
-            # DEBUG: update this: room as identifier is wrong
-            zid = 
-            password = 
-            firstPref = 
-            subPref = 
-            checker = checkValidRoomRequest(form)
-            return redirect(url_for('home'))
+        if (form["submit"] == "secure my room"):
+            zid = form["zid"]
+            password = form["zid"]
+            firstPref = form["first_room"]
+            subPref = [form["pref1"], form["pref2"], form["pref3"], form["pref4"], form["pref5"]]
+            checker = checkValidRoomRequest(zid, password, firstPref, subPref)
+            render_template("submitted.html", data=checker)
     else:
         # TODO: major error handler
         pass
 
     
 
-def checkValidRoomRequest(zid, password, firstPreference):
+def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
     errors = []
     time = datetime.datetime.now()
     if(not checkCorrectPassword(zid, password)):
         errors.append("incorrect password")
-    # TODO: check valid time
+    if (not checkValidTime(zid, time)):
+        errors.append("before valid submit time")
     
     validRoom = roomOccupied(firstPreference)
     if(validRoom["occupied"]):

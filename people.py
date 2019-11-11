@@ -1,6 +1,7 @@
 import csv
 import math
 import random
+import datetime
 
 STUDENT_FILE_PATH = "dataLists/Students.csv"
 NUM_OF_ROOMS = 212
@@ -9,7 +10,7 @@ NUM_OF_SENIORS = 0
 NUM_OF_FRESHERS = 0
 
 class Student():
-    def __init__(self, zid, name, year, gender, roomPoints, password):
+    def __init__(self, zid, name, year, gender, roomPoints, password, startTime):
         self.zID = zid
         self.name = name
         self.year = year
@@ -19,6 +20,7 @@ class Student():
         self.assigned = False
         self.allocation = None
         self.password = password
+        self.startTime = startTime
     
     # NOTE: This is an unsafe method, doesn't check if the person is already allocated
     def assignRoom(self, newRoom):
@@ -45,8 +47,10 @@ def importStudents():
             roomPoints = int(row["roomPoints"])
             gender = row["gender"]
             password = row["password"]
+            # startTime in datetime format
+            startTime = row["startTime"]
 
-            newStudnet = Student(zid, name, year, gender, roomPoints, password)
+            newStudnet = Student(zid, name, year, gender, roomPoints, password, startTime)
             studentList.append(newStudnet)
             
             if year > 1:
@@ -105,7 +109,7 @@ def createNewStudents():
             writer.writerow({"zID":zid,"StudentName":name,"year":year,"roomPoints":roomPoints,"gender":gender})
 
 
-        newStudnet = Student(zid, name, year, gender, roomPoints, "BAXTABOTISTHEBESTBOT")
+        newStudnet = Student(zid, name, year, gender, roomPoints, "BAXTABOTISTHEBESTBOT", 0)
         studentList.append(newStudnet)
 
 def getStudentList():
@@ -129,6 +133,12 @@ def checkCorrectPassword(zid, password):
         return True
     
     return False
+
+def checkValidTime(zid, time):
+    person = findPerson(studentList, zid)
+    if (person.startTime <= time):
+        return False
+    return True
 
 importStudents()
 createNewStudents()
