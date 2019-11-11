@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from flask import Flask, render_template, request, json
 from allocation import listAvaliableRooms, makeAllocation, createFloors, loadAllocatedCSV
 from people import getStudentList, checkCorrectPassword, checkValidTime
