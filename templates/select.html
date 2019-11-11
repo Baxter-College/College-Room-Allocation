@@ -4,9 +4,10 @@
 
 {% block content %}
     <h2>Select Rooms</h2>
-    <script src="select.js"></script>
+    <script src="{{url_for('static', filename='select.js')}}"></script>
     <script type="text/javascript">
-        get_data({{data}});
+        console.log({{data|safe}})
+        get_data({{data|safe}});
     </script>
     <form name="room_form" onsubmit="return validate_form()" action="/rooms/submit" method="POST">
         

@@ -4,6 +4,7 @@ from allocation import listAvaliableRooms, makeAllocation, createFloors, loadAll
 from people import getStudentList, checkCorrectPassword, checkValidTime
 from rooms import roomOccupied
 import datetime
+import json
 
 app = Flask(__name__)
 
@@ -22,7 +23,7 @@ def select_rooms():
     
     if request.method == "GET":
         data = get_data()
-
+        print(data)
         return render_template("select.html", data=data)
 
     elif request.method == "POST":
@@ -65,8 +66,8 @@ def get_data():
     femaleList = {}
 
     for floorNum in range(1,8):
-        maleList[floorNum] = listAvaliableRooms(floorNum, "m", True)
-        femaleList[floorNum] = listAvaliableRooms(floorNum, "f", True)
+        maleList[str(floorNum)] = listAvaliableRooms(floorNum, "m", True)
+        femaleList[str(floorNum)] = listAvaliableRooms(floorNum, "f", True)
     
     allData = {"ZIDS":studentList, "MALE":maleList, "FEMALE":femaleList}
 

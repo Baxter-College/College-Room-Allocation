@@ -143,9 +143,11 @@ def listAvaliableRooms(floorNum, gender=None, isSenior = False):
                     if (surroundingCount[gender]/ALTERNATING_GENDERS_ROOM_SEPERATION > 0.5):
                         avaliableRooms[room] = {"avaliable":False, "reason":"Trying to alternate rooms. RULE #3"}
                         continue
-
+    outp = {}
+    for key in avaliableRooms:
+        outp[str(key)] = avaliableRooms[key]
     
-    return avaliableRooms
+    return outp
                 
 # the number of seniors that can fit on all floors evenly
 def seniorCapacity(floorNum):
