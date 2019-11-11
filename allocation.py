@@ -13,7 +13,7 @@ NUMBER_OF_SENIORS_FRONT_BALC = 2
 EQUALISE_ONBALC_GENDER_BALANCE = True
 # RULE #6: Try to keep the number of senior males/females equal (I don't think this is nessacary)
 EQUALISE_ONFLOOR_SENIOR_GENDER_BALANCE = True
-# RULE #7: Allocate example freshers to rooms which are unavaliable to seniors. NOTE: Unstable
+# RULE #7: Allocate example freshers to rooms which are unavailable to seniors. NOTE: Unstable
 ALLOCATE_EXAMPLE_FRESHERS = False
 
 
@@ -68,15 +68,15 @@ class Floor():
         return {"m":maleCount, "f":femaleCount}
 
 # floorNum is 1 indexed floor
-def listAvaliableRooms(floorNum, gender=None, isSenior = False):
+def listAvailableRooms(floorNum, gender=None, isSenior = False):
     floor = floorList[floorNum - 1]    
-    avaliableRooms = {}
+    availableRooms = {}
 
     for room in floor.rooms:
         if (room.assigned):
-            avaliableRooms[room.roomNumber] = {"avaliable":False, "reason":"Occupied"}
+            availableRooms[room.roomNumber] = {"available":False, "reason":"Occupied"}
         else:
-            avaliableRooms[room.roomNumber] = {"avaliable":True, "reason":"OK"}
+            availableRooms[room.roomNumber] = {"available":True, "reason":"OK"}
     
     floorSeniorCapacity = seniorCapacity(floorNum)
     
@@ -86,43 +86,43 @@ def listAvaliableRooms(floorNum, gender=None, isSenior = False):
     if EQUALISE_SENIOR_INTERFLOOR_NUMBERS and isSenior:
         floorSeniorCount = floor.numOfSeniors
         if floorSeniorCount > floorSeniorCapacity:
-            for room in avaliableRooms:
-                if (avaliableRooms[room]["avaliable"]):
-                    avaliableRooms[room] = {"avaliable":False, "reason":"Too many seniors on this floor. RULE #1"}
-            return avaliableRooms
+            for room in availableRooms:
+                if (availableRooms[room]["available"]):
+                    availableRooms[room] = {"available":False, "reason":"Too many seniors on this floor. RULE #1"}
+            return availableRooms
     
     if EQUALISE_ONFLOOR_SENIOR_GENDER_BALANCE and isSenior:
         genderCount = floor.numOfGender(isSenior=True)[gender]
 
 
         if ((floorSeniorCapacity - genderCount)/floorSeniorCapacity) < (0.5 - GENDER_BALANCE_PERCENTAGE_LENIENCY):
-            for room in avaliableRooms:
-                if (avaliableRooms[room]["avaliable"]):
-                    avaliableRooms[room] = {"avaliable":False, "reason":"Too many seniors on this floor of your gender. RULE #2"}
-            return avaliableRooms
+            for room in availableRooms:
+                if (availableRooms[room]["available"]):
+                    availableRooms[room] = {"available":False, "reason":"Too many seniors on this floor of your gender. RULE #2"}
+            return availableRooms
 
     if EQUALISE_ONFLOOR_GENDER_BALANCE:
         genderCount = floor.numOfGender()[gender]
         
         
         if (genderCount/numOfRooms) > (0.5 + GENDER_BALANCE_PERCENTAGE_LENIENCY):
-            for room in avaliableRooms:
-                if (avaliableRooms[room]["avaliable"]):
-                    avaliableRooms[room] = {"avaliable":False, "reason":"Too many people on this floor of your gender. RULE #3"}
-            return avaliableRooms
+            for room in availableRooms:
+                if (availableRooms[room]["available"]):
+                    availableRooms[room] = {"available":False, "reason":"Too many people on this floor of your gender. RULE #3"}
+            return availableRooms
 
 
     for room in floor.rooms:
         if not room.assigned:
             if room.rf:
-                avaliableRooms[room] = {"avaliable":False, "reason":"RF room"}
+                availableRooms[room] = {"available":False, "reason":"RF room"}
                 continue
             
             if room.front and room.balc:
                 divInfo = getDivisionInformation(floorNum, room.SubDivisionNumber)
                 
                 if NUMBER_OF_SENIORS_FRONT_BALC <= divInfo["numSenior"] and isSenior:
-                    avaliableRooms[room] = {"avaliable":False, "reason":"Too many seniors on this balc. RULE #4"}
+                    availableRooms[room] = {"available":False, "reason":"Too many seniors on this balc. RULE #4"}
                     continue
                 
                 if EQUALISE_ONBALC_GENDER_BALANCE:
@@ -133,7 +133,7 @@ def listAvaliableRooms(floorNum, gender=None, isSenior = False):
                         currGenderCount = divInfo["numFemale"]
 
                     if (divInfo["numOfRooms"] - currGenderCount)/divInfo["numOfRooms"] <= 0.5:
-                        avaliableRooms[room] = {"avaliable":False, "reason":"Too many people on this balc with your gener. RULE #5"}
+                        availableRooms[room] = {"available":False, "reason":"Too many people on this balc with your gener. RULE #5"}
                         continue
                 
                 
@@ -141,11 +141,11 @@ def listAvaliableRooms(floorNum, gender=None, isSenior = False):
                 if (ALTERNATING_GENDERS_ROOM_SEPERATION != 0):
                     surroundingCount = countAdjacentRooms(room, ALTERNATING_GENDERS_ROOM_SEPERATION)
                     if (surroundingCount[gender]/ALTERNATING_GENDERS_ROOM_SEPERATION > 0.5):
-                        avaliableRooms[room] = {"avaliable":False, "reason":"Trying to alternate rooms. RULE #3"}
+                        availableRooms[room] = {"available":False, "reason":"Trying to alternate rooms. RULE #3"}
                         continue
     outp = {}
-    for key in avaliableRooms:
-        outp[str(key)] = avaliableRooms[key]
+    for key in availableRooms:
+        outp[str(key)] = availableRooms[key]
     
     return outp
                 
@@ -169,7 +169,7 @@ def getDivisionInformation(floorNum, division):
     floor = floorList[floorNum - 1]
 
     divisionRooms = []
-    numAvaliable = 0
+    numAvailable = 0
     numMale = 0
     numFemale = 0
     numSenior = 0
@@ -180,7 +180,7 @@ def getDivisionInformation(floorNum, division):
             divisionRooms.append(room)
 
             if room.assigned == False:
-                numAvaliable += 1
+                numAvailable += 1
             else:
                 if room.occupant.gender == 'm':
                     numMale += 1
@@ -193,7 +193,7 @@ def getDivisionInformation(floorNum, division):
 
     numOfRooms = len(divisionRooms)
 
-    return {"numOfRooms":numOfRooms, "numAvaliable":numAvaliable, "numMale":numMale, "numFemale":numFemale, "numSenior":numSenior, "numFresh":numFresh}
+    return {"numOfRooms":numOfRooms, "numAvailable":numAvailable, "numMale":numMale, "numFemale":numFemale, "numSenior":numSenior, "numFresh":numFresh}
 
 def allocateFreshers():
     unassignedMaleFreshers = []
@@ -205,8 +205,8 @@ def allocateFreshers():
     for floor in range(NUMBER_OF_FLOORS):
         floorNum = floor + 1
 
-        allValidMale.extend(listAvaliableRooms(floorNum,"m",True))
-        allValidFemale.extend(listAvaliableRooms(floorNum,"f",True))
+        allValidMale.extend(listAvailableRooms(floorNum,"m",True))
+        allValidFemale.extend(listAvailableRooms(floorNum,"f",True))
 
 
     for person in studentList:
@@ -338,13 +338,13 @@ if __name__ == "__main__":
     createFloors()
     loadAllocatedCSV()
 
-    for st in listAvaliableRooms(6, 'm', True):
+    for st in listAvailableRooms(6, 'm', True):
         print(f"{st.roomNumber} ",end='')
     print(f"\n")
 
     makeAllocation("z5293139",601)
 
-    for st in listAvaliableRooms(6, 'm', True):
+    for st in listAvailableRooms(6, 'm', True):
         print(f"{st.roomNumber} ",end='')
     print(f"\n")
 
@@ -352,7 +352,7 @@ if __name__ == "__main__":
 
     makeAllocation("z5261721",602)
 
-    for st in listAvaliableRooms(6, 'f', True):
+    for st in listAvailableRooms(6, 'f', True):
         print(f"{st.roomNumber} ",end='')
     print(f"\n")
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from flask import Flask, render_template, request, json
-from allocation import listAvaliableRooms, makeAllocation, createFloors, loadAllocatedCSV
+from allocation import listAvailableRooms, makeAllocation, createFloors, loadAllocatedCSV
 from people import getStudentList, checkCorrectPassword, checkValidTime
 from rooms import roomOccupied
 import datetime
@@ -23,7 +23,6 @@ def select_rooms():
     
     if request.method == "GET":
         data = get_data()
-        print(data)
         return render_template("select.html", data=data)
 
     elif request.method == "POST":
@@ -67,8 +66,8 @@ def get_data():
     femaleList = {}
 
     for floorNum in range(1,8):
-        maleList[str(floorNum)] = listAvaliableRooms(floorNum, "m", True)
-        femaleList[str(floorNum)] = listAvaliableRooms(floorNum, "f", True)
+        maleList[str(floorNum)] = listAvailableRooms(floorNum, "m", True)
+        femaleList[str(floorNum)] = listAvailableRooms(floorNum, "f", True)
     
     allData = {"ZIDS":studentList, "MALE":maleList, "FEMALE":femaleList}
 

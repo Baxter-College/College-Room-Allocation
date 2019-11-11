@@ -3,18 +3,95 @@
 {% block title %} Select Room {% endblock %}
 
 {% block content %}
-    <h2>Select Rooms</h2>
-    <script src="{{url_for('static', filename='select.js')}}"></script>
+    <h1>Select Rooms</h1>
     <script type="text/javascript">
-        console.log({{data|safe}})
-        get_data({{data|safe}});
+        var True = true;
+        var False = false;
+        var data = {{data|safe}};
+        console.log(data);
+        var display_floor = 1;
+        var gender = "";
+        function get_gender(zid) {
+            return data["ZIDS"][zid];
+        }
+        function get_rooms(zid) {
+            var gender = get_gender(zid);
+            if (gender == "m") {
+                return data["MALE"]
+            } else {
+                return data["FEMALE"]
+            }
+        }
+        function update_rooms(zid) {
+            var rooms = get_rooms(zid);
+            for (var floor in rooms) {
+                var count = 0;
+                for (var room in rooms[floor]) {
+                    room_ele = document.getElementById(room);
+                    room_ele.className.replace(" available", "");
+                    room_ele.className.replace(" unavailable", "");
+                    room_ele.children[1].innerHTML = rooms[floor][room]["reason"];
+                    if (rooms[floor][room]["available"]) {
+                        count++;
+                        room_ele.className += " available";
+                    } else {
+                        room_ele.className += " unavailable";
+                    }
+                }
+                floor = document.getElementById("floor" + floor);
+                floor.className.replace(" available", "");
+                floor.className.replace(" unavailable", "");
+                if (count > 0) {
+                    floor.className += " available";
+                } else {
+                    floor.className += " unavailable";
+                }
+            }
+        }
+        function valid_zid(zid) {
+            return zid in data["ZIDS"]
+        }
+        function zid_update(evt) {
+            var zid = evt.currentTarget.value
+            if (!valid_zid(zid)) {
+                evt.currentTarget.style.color = "red"
+            } else {
+                evt.currentTarget.style.color = "black"
+                update_rooms(zid);
+            }
+        }
+        function removeElement(elementId) {
+            // Removes an element from the document
+            var element = document.getElementById(elementId);
+            element.parentNode.removeChild(element);
+        }
+
+        function validate_form(){
+            // TODO: validate the form before send
+        }
+        function viewFloor(evt, floor) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(floor).style.display = "block";
+            evt.currentTarget.className += " active"
+        }
     </script>
     <form name="room_form" onsubmit="return validate_form()" method="POST">
-        
-        <input type="text" id="zid" placeholder="enter your zid" name="zid">
+        <h3>ZID:</h3>
+        <input type="text" id="zid" placeholder="enter your zid" name="zid" oninput="zid_update(event)">
+        <h3>Code:</h3>
         <input type="text" id="code" placeholder="enter your code" name="code">
+        <h3>Secure a room:</h3>
         <input type="text" id="first_room" placeholder="which room do you want" name="first_room">
 
+        <h3>Other preferences:</h3>
         <input type="text" id="pref1" placeholder="enter first other preference" name="pref1">
         <input type="text" id="pref2" placeholder="enter second other preference" name="pref2">
         <input type="text" id="pref3" placeholder="enter third other preference" name="pref3">
@@ -23,9 +100,10 @@
         
         <input type="submit"  name = "submit" value="secure my room">
     </form>
+    <h2>Browse Rooms:</h2>
     <div class="tab">
         {% for floor, rooms in data["MALE"].items() %}
-            <button class="tablinks unsure" onclick="viewFloor(event, {{floor}})">Floor {{floor}}</button>
+            <button id="floor{{floor}}" class="tablinks unsure" onclick="viewFloor(event, {{floor}})" value="Floor">Floor {{floor}}</button>
         {% endfor %}
     </div>
 
@@ -33,7 +111,7 @@
         <div id="{{floor}}" class="tabcontent">
         <table>
         {% for room, deets in data["MALE"][floor].items() %}
-            <tr id="room{{room}}" class="unsure">
+            <tr id="{{room}}" class="unsure">
                 <td name="roonum">{{room}}</td>
                 <td name="deets"></td>
             </tr>

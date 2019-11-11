@@ -27,6 +27,8 @@
 				overflow: hidden;
 				border: 1px solid #ccc;
 				background-color: #f1f1f1;
+				vertical-align: center;
+				padding: 5px 0px;
 			}
 			
 			/* Style the buttons inside the tab */
@@ -36,9 +38,11 @@
 				border: none;
 				outline: none;
 				cursor: pointer;
-				padding: 14px 16px;
+				padding: 0px 16px;
 				transition: 0.3s;
 				font-size: 17px;
+				text-align: center;
+				vertical-align: center;
 			}
 			
 			/* Change background color of buttons on hover */
@@ -49,6 +53,7 @@
 			/* Create an active/current tablink class */
 			.tab button.active {
 				background-color: #ccc;
+				color: white;
 			}
 			
 			/* Style the tab content */
@@ -110,21 +115,7 @@
 	</head>
 	<body>
 		<h1><a href="/" style="text-decoration:none;">🤖</a></h1>
-		<script type="text/javascript">
-			function viewFloor(evt, floor) {
-				var i, tabcontent, tablinks;
-				tabcontent = document.getElementsByClassName("tabcontent");
-				for (i = 0; i < tabcontent.length; i++) {
-					tabcontent[i].style.display = "none";
-				}
-				tablinks = document.getElementsByClassName("tablinks");
-				for (i = 0; i < tablinks.length; i++) {
-					tablinks[i].className = tablinks[i].className.replace(" active", "");
-				}
-				document.getElementById(floor).style.display = "block";
-				evt.currentTarget.className += " active"
-			}
-		</script>
+		
 		{% block content %}
 
 		{% endblock %}
