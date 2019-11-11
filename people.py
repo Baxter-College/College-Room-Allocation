@@ -106,6 +106,13 @@ def createNewStudents():
         newStudnet = Student(zid, name, year, gender, roomPoints)
         studentList.append(newStudnet)
 
+def getStudentList():
+    studentListGender = {}
+    for student in studentList:
+        if (student.year != 1):
+            studentListGender[student.zID] = student.gender
+    
+    return studentListGender
 
 def findPerson(personList, zID):
     for person in personList:
