@@ -67,4 +67,14 @@ def findRoom(rList, roomNumber):
     
     return False
 
+def roomOccupied(roomNum):
+    room = findRoom(roomList, roomNum)
+    if (room):
+        if (room.assigned):
+            return {"occupied":True, "found":True}
+        else:
+            return {"occupied":False, "found":True}
+    else:
+        return {"occupied":True, "found":False}
+
 importRooms()
