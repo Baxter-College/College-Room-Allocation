@@ -68,12 +68,16 @@ def findRoom(rList, roomNumber):
     return False
 
 def roomOccupied(roomNum):
-    room = findRoom(roomList, roomNum)
-    if (room):
-        if (room.assigned):
-            return {"occupied":True, "found":True}
+    if (roomNum != ""):
+        roomNum = int(roomNum)
+        room = findRoom(roomList, roomNum)
+        if (room != False):
+            if (room.assigned):
+                return {"occupied":True, "found":True}
+            else:
+                return {"occupied":False, "found":True}
         else:
-            return {"occupied":False, "found":True}
+            return {"occupied":True, "found":False}
     else:
         return {"occupied":True, "found":False}
 

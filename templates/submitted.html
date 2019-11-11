@@ -1,12 +1,13 @@
-{% if checker["valid"] == True %}
+{% if data["valid"] == True %}
     <p style="text-align: center;"><strong><span style="font-family: Arial, Helvetica, sans-serif; font-size: 30px;">SUCCESS</span></strong></p>
 
 {% else %}
     <p style="text-align: center;"><strong><span style="font-family: Arial, Helvetica, sans-serif; font-size: 30px;">ERROR</span></strong></p>
     <ol>
-        {% for error in checker["errors"] %}
+        {% for error in data["errors"] %}
             <li style="text-align: left;"><strong><span style="font-family: Arial, Helvetica, sans-serif; font-size: 18px;">
                     {{error}}
             </span></strong></li>
         {% endfor %}
     </ol>
+{% endif %}

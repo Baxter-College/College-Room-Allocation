@@ -18,7 +18,7 @@ def before_request():
     # fill freshers
     pass
 
-@app.route("/rooms/select", methods=["GET","POST"])
+@app.route("/", methods=["GET","POST"])
 def select_rooms():
     
     if request.method == "GET":
@@ -30,11 +30,11 @@ def select_rooms():
         form = request.form
         if (form["submit"] == "secure my room"):
             zid = form["zid"]
-            password = form["zid"]
+            password = form["code"]
             firstPref = form["first_room"]
             subPref = [form["pref1"], form["pref2"], form["pref3"], form["pref4"], form["pref5"]]
             checker = checkValidRoomRequest(zid, password, firstPref, subPref)
-            render_template("submitted.html", data=checker)
+            return render_template("submitted.html", data=checker)
     else:
         # TODO: major error handler
         pass
@@ -46,8 +46,9 @@ def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
     time = datetime.datetime.now()
     if(not checkCorrectPassword(zid, password)):
         errors.append("incorrect password")
-    if (not checkValidTime(zid, time)):
-        errors.append("before valid submit time")
+    # TODO: TIME CHECKS
+    # if (not checkValidTime(zid, time)):
+    #     errors.append("before valid submit time")
     
     validRoom = roomOccupied(firstPreference)
     if(validRoom["occupied"]):
