@@ -9,7 +9,7 @@ NUM_OF_SENIORS = 0
 NUM_OF_FRESHERS = 0
 
 class Student():
-    def __init__(self, zid, name, year, gender, roomPoints):
+    def __init__(self, zid, name, year, gender, roomPoints, password):
         self.zID = zid
         self.name = name
         self.year = year
@@ -18,6 +18,7 @@ class Student():
         self.preferenceList = []
         self.assigned = False
         self.allocation = None
+        self.password = password
     
     # NOTE: This is an unsafe method, doesn't check if the person is already allocated
     def assignRoom(self, newRoom):
@@ -43,8 +44,9 @@ def importStudents():
             year = int(row["year"])
             roomPoints = int(row["roomPoints"])
             gender = row["gender"]
+            password = row["password"]
 
-            newStudnet = Student(zid, name, year, gender, roomPoints)
+            newStudnet = Student(zid, name, year, gender, roomPoints, password)
             studentList.append(newStudnet)
             
             if year > 1:
@@ -103,7 +105,7 @@ def createNewStudents():
             writer.writerow({"zID":zid,"StudentName":name,"year":year,"roomPoints":roomPoints,"gender":gender})
 
 
-        newStudnet = Student(zid, name, year, gender, roomPoints)
+        newStudnet = Student(zid, name, year, gender, roomPoints, "BAXTABOTISTHEBESTBOT")
         studentList.append(newStudnet)
 
 def getStudentList():
@@ -118,6 +120,13 @@ def findPerson(personList, zID):
     for person in personList:
         if person.zID == zID:
             return person
+    
+    return False
+
+def checkCorrectPassword(zid, password):
+    person = findPerson(studentList, zid)
+    if (person.password == password):
+        return True
     
     return False
 

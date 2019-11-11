@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, json
 from allocation import listAvaliableRooms, makeAllocation
-from people import getStudentList
+from people import getStudentList, checkCorrectPassword
+from rooms import roomOccupied
+import datetime
 import json
 
 app = Flask(__name__)
@@ -14,11 +16,47 @@ def before_request():
     # fill freshers
     pass
 
-@app.route("/rooms/select", methods=["GET"])
+@app.route("/rooms/select", methods=["GET","POST"])
 def select_rooms():
-    data = get_data()
+    
+    if request.method == "GET":
+        data = get_data()
 
-    return render_template("select.html", data=data)
+        return render_template("select.html", data=data)
+
+    elif request.method == "POST":
+        form = request.form
+        if (form["submit"] == "SUBMIT"):
+            # DEBUG: update this: room as identifier is wrong
+            zid = 
+            password = 
+            firstPref = 
+            subPref = 
+            checker = checkValidRoomRequest(form)
+            return redirect(url_for('home'))
+    else:
+        # TODO: major error handler
+        pass
+
+    
+
+def checkValidRoomRequest(zid, password, firstPreference):
+    errors = []
+    time = datetime.datetime.now()
+    if(not checkCorrectPassword(zid, password)):
+        errors.append("incorrect password")
+    # TODO: check valid time
+    
+    validRoom = roomOccupied(firstPreference)
+    if(validRoom["occupied"]):
+        if (validRoom["found"]):
+            errors.append("room is occupied")
+        else:
+            errors.append("room not found or invalid room number")
+    
+    return {"valid":(len(errors) == 0), "errors":errors}
+    
+    
 
 def get_data():
     studentList = getStudentList()
