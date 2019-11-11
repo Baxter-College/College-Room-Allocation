@@ -1,19 +1,19 @@
 NUMBER_OF_FLOORS = 7
 
-# Balance the number of seniors on each floor
+# RULE #1: Balance the number of seniors on each floor
 EQUALISE_SENIOR_INTERFLOOR_NUMBERS = True
-# Balance the genders of a floor
+# RULE #2: Balance the genders of a floor
 EQUALISE_ONFLOOR_GENDER_BALANCE = True
 GENDER_BALANCE_PERCENTAGE_LENIENCY = 0.1
-# Equalises the number of males and females in a set of x rooms to try to alternate male and female. Odd numbers only, set to 0 to turn off
+# RULE #3: Equalises the number of males and females in a set of x rooms to try to alternate male and female. Odd numbers only, set to 0 to turn off
 ALTERNATING_GENDERS_ROOM_SEPERATION = 0
-# Maximum number of seniors on shared balcs
+# RULE #4: Maximum number of seniors on shared balcs
 NUMBER_OF_SENIORS_FRONT_BALC = 2
-# Keep the number of males and females on a front balc equal
+# RULE #5: Keep the number of males and females on a front balc equal
 EQUALISE_ONBALC_GENDER_BALANCE = True
-# Try to keep the number of senior males/females equal (I don't think this is nessacary)
+# RULE #6: Try to keep the number of senior males/females equal (I don't think this is nessacary)
 EQUALISE_ONFLOOR_SENIOR_GENDER_BALANCE = True
-# Allocate example freshers to rooms which are unavaliable to seniors. NOTE: Unstable
+# RULE #7: Allocate example freshers to rooms which are unavaliable to seniors. NOTE: Unstable
 ALLOCATE_EXAMPLE_FRESHERS = False
 
 
@@ -70,7 +70,13 @@ class Floor():
 # floorNum is 1 indexed floor
 def listAvaliableRooms(floorNum, gender=None, isSenior = False):
     floor = floorList[floorNum - 1]    
-    avaliableRooms = []
+    avaliableRooms = {}
+
+    for room in floor.rooms:
+        if (room.assigned):
+            avaliableRooms[room.roomNumber] = {"avaliable":False, "reason":"Occupied"}
+        else:
+            avaliableRooms[room.roomNumber] = {"avaliable":True, "reason":"OK"}
     
     floorSeniorCapacity = seniorCapacity(floorNum)
     
@@ -80,6 +86,9 @@ def listAvaliableRooms(floorNum, gender=None, isSenior = False):
     if EQUALISE_SENIOR_INTERFLOOR_NUMBERS and isSenior:
         floorSeniorCount = floor.numOfSeniors
         if floorSeniorCount > floorSeniorCapacity:
+            for room in avaliableRooms:
+                if (avaliableRooms[room]["avaliable"]):
+                    avaliableRooms[room] = {"avaliable":False, "reason":"Too many seniors on this floor. RULE #1"}
             return avaliableRooms
     
     if EQUALISE_ONFLOOR_SENIOR_GENDER_BALANCE and isSenior:
@@ -87,6 +96,9 @@ def listAvaliableRooms(floorNum, gender=None, isSenior = False):
 
 
         if ((floorSeniorCapacity - genderCount)/floorSeniorCapacity) < (0.5 - GENDER_BALANCE_PERCENTAGE_LENIENCY):
+            for room in avaliableRooms:
+                if (avaliableRooms[room]["avaliable"]):
+                    avaliableRooms[room] = {"avaliable":False, "reason":"Too many seniors on this floor of your gender. RULE #2"}
             return avaliableRooms
 
     if EQUALISE_ONFLOOR_GENDER_BALANCE:
@@ -94,18 +106,23 @@ def listAvaliableRooms(floorNum, gender=None, isSenior = False):
         
         
         if (genderCount/numOfRooms) > (0.5 + GENDER_BALANCE_PERCENTAGE_LENIENCY):
+            for room in avaliableRooms:
+                if (avaliableRooms[room]["avaliable"]):
+                    avaliableRooms[room] = {"avaliable":False, "reason":"Too many people on this floor of your gender. RULE #3"}
             return avaliableRooms
 
 
     for room in floor.rooms:
         if not room.assigned:
             if room.rf:
+                avaliableRooms[room] = {"avaliable":False, "reason":"RF room"}
                 continue
             
             if room.front and room.balc:
                 divInfo = getDivisionInformation(floorNum, room.SubDivisionNumber)
                 
                 if NUMBER_OF_SENIORS_FRONT_BALC <= divInfo["numSenior"] and isSenior:
+                    avaliableRooms[room] = {"avaliable":False, "reason":"Too many seniors on this balc. RULE #4"}
                     continue
                 
                 if EQUALISE_ONBALC_GENDER_BALANCE:
@@ -116,17 +133,17 @@ def listAvaliableRooms(floorNum, gender=None, isSenior = False):
                         currGenderCount = divInfo["numFemale"]
 
                     if (divInfo["numOfRooms"] - currGenderCount)/divInfo["numOfRooms"] <= 0.5:
+                        avaliableRooms[room] = {"avaliable":False, "reason":"Too many people on this balc with your gener. RULE #5"}
                         continue
                 
-                avaliableRooms.append(room)
                 
             else:
                 if (ALTERNATING_GENDERS_ROOM_SEPERATION != 0):
                     surroundingCount = countAdjacentRooms(room, ALTERNATING_GENDERS_ROOM_SEPERATION)
                     if (surroundingCount[gender]/ALTERNATING_GENDERS_ROOM_SEPERATION > 0.5):
+                        avaliableRooms[room] = {"avaliable":False, "reason":"Trying to alternate rooms. RULE #3"}
                         continue
 
-                avaliableRooms.append(room)
     
     return avaliableRooms
                 
