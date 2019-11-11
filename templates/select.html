@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block title %} Select Room {% endblock %}
+
+{% block content %}
+    <h2>Select Rooms</h2>
+    <script src="select.js"></script>
+    <form name="room_form" onsubmit="return validate_form()" action="/rooms/submit" method="POST">
+        
+        <input type="text" id="zid" placeholder="enter your zid" name="zid">
+        <input type="text" id="code" placeholder="enter your code" name="code">
+        <input type="text" id="first_room" placeholder="which room do you want" name="first_room">
+
+        <input type="text" id="pref1" placeholder="enter first other preference" name="pref1">
+        <input type="text" id="pref2" placeholder="enter second other preference" name="pref2">
+        <input type="text" id="pref3" placeholder="enter third other preference" name="pref3">
+        <input type="text" id="pref4" placeholder="enter fourth other preference" name="pref4">
+        <input type="text" id="pref5" placeholder="enter fifth other preference" name="pref5">
+        
+        <input type="submit" value="secure my room">
+    </form>
