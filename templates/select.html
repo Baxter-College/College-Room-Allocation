@@ -23,15 +23,15 @@
         <input type="submit"  name = "submit" value="secure my room">
     </form>
     <div class="tab">
-        {% for floor, rooms in data["MALE"]}
+        {% for floor, rooms in data["MALE"].items() %}
             <button class="tablinks unsure" onclick="viewFloor(event, {{floor}})">Floor {{floor}}</button>
         {% endfor %}
     </div>
 
-    {% for floor, rooms in data["MALE"] %}
+    {% for floor, rooms in data["MALE"].items() %}
         <div id="{{floor}}" class="tabcontent">
         <table>
-        {% for room, deets in data["MALE"][floor] %}
+        {% for room, deets in data["MALE"][floor].items() %}
             <tr id="room{{room}}" class="unsure">
                 <td name="roonum">{{room}}</td>
                 <td name="deets"></td>
@@ -40,3 +40,5 @@
         </table>
         </div>
     {% endfor %}
+
+    {% endblock %}
