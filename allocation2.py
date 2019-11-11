@@ -16,7 +16,6 @@ EQUALISE_ONFLOOR_SENIOR_GENDER_BALANCE = True
 # Allocate example freshers to rooms which are unavaliable to seniors. NOTE: Unstable
 ALLOCATE_EXAMPLE_FRESHERS = False
 
-# TODO: Discuss what this code will do: if people know they will get a bad room, will they actually come back?
 
 from people import studentList, Student, findPerson, NUM_OF_SENIORS, NUM_OF_FRESHERS
 from rooms import roomList, Room, findRoom
