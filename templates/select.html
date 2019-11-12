@@ -109,14 +109,22 @@
 
     {% for floor, rooms in data["MALE"].items() %}
         <div id="{{floor}}" class="tabcontent">
-        <table>
-        {% for room, deets in data["MALE"][floor].items() %}
-            <tr id="{{room}}" class="unsure">
-                <td name="roonum">{{room}}</td>
-                <td name="deets"></td>
-            </tr>
-        {% endfor %}
-        </table>
+            <div class="row">
+                <div class="column">
+                    <table>
+                        {% for room, deets in data["MALE"][floor].items() %}
+                            <tr id="{{room}}" class="unsure">
+                                <td name="roonum">{{room}}</td>
+                                <td name="deets"></td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                <div class="vl"></div>
+                <div class="column">
+                    <img src="/static/FloorPlans/Floor{{floor}}.jpg">
+                </div>
+              </div>
         </div>
     {% endfor %}
 

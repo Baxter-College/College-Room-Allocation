@@ -22,6 +22,22 @@
 			input[type=date].date_err {
 				background-color:rgb(202, 100, 100)
 			}
+			/* styles columns*/
+			.column {
+				float: left;
+				width: 50%;
+				padding: 10px;
+			  }
+			/* Clear floats after the columns */
+			.row:after {
+				content: "";
+				display: table;
+				clear: both;
+			}
+			/* Vertical line between columns */
+			.vl {
+				border-left: 3px solid #ccc;
+			  }
 			/* Style the tab */
 			.tab {
 				overflow: hidden;
