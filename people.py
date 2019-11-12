@@ -2,6 +2,7 @@ import csv
 import math
 import random
 import datetime
+import pytz
 
 STUDENT_FILE_PATH = "dataLists/Students.csv"
 NUM_OF_ROOMS = 212
@@ -51,9 +52,12 @@ def importStudents():
             startTime = row["startTime"]
 
             if (startTime == ""):
-                startTime == 100000000000
+                startTime = datetime.datetime.strptime("2050","%Y")
             else:
-                startTime = int(startTime)
+                # in format "10:30AM 12/11/2019"
+                tz = pytz.timezone('Australia/Sydney')
+                startTime = datetime.datetime.strptime(startTime,"%I:%M%p %d/%m/%Y")
+                tz.localize(startTime)
 
             newStudnet = Student(zid, name, year, gender, roomPoints, password, startTime)
             studentList.append(newStudnet)
@@ -114,7 +118,7 @@ def createNewStudents():
             writer.writerow({"zID":zid,"StudentName":name,"year":year,"roomPoints":roomPoints,"gender":gender})
 
 
-        newStudnet = Student(zid, name, year, gender, roomPoints, "BAXTABOTISTHEBESTBOT", 10000000000000000)
+        newStudnet = Student(zid, name, year, gender, roomPoints, "BAXTABOTISTHEBESTBOT", datetime.datetime.strptime("2050","%Y"))
         studentList.append(newStudnet)
 
 def getStudentList():
@@ -132,6 +136,15 @@ def findPerson(personList, zID):
     
     return False
 
+def checkPersonAllocated(zid):
+    person = findPerson(studentList, zid)
+    
+    if (person != False):
+        if (person.assigned):
+            return {"allocated":True, "room":person.allocation}
+    
+    return {"allocated":False, "room":False}
+
 def checkCorrectPassword(zid, password):
     person = findPerson(studentList, zid)
     
@@ -144,11 +157,14 @@ def checkCorrectPassword(zid, password):
 def checkValidTime(zid, time):
     person = findPerson(studentList, zid)
     if (person != False):
+        print ("-A------",person.startTime)
+        print ("-B------",time)
+        
         if (person.startTime <= time):
-            return False
+            return True
 
             
-    return True
+    return False
 
 importStudents()
 createNewStudents()

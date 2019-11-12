@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 from flask import Flask, render_template, request, json
 from allocation import listAvailableRooms, makeAllocation, createFloors, loadAllocatedCSV
-from people import getStudentList, checkCorrectPassword, checkValidTime
+from people import getStudentList, checkCorrectPassword, checkValidTime, checkPersonAllocated
 from rooms import roomOccupied
 import datetime
+import pytz
 import json
 
 app = Flask(__name__)
@@ -43,11 +44,17 @@ def select_rooms():
 def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
     errors = []
     time = datetime.datetime.now()
+    pytz.timezone('Australia/Sydney').localize(time)
+
+    personAllocation = checkPersonAllocated(zid)
+    if (personAllocation["allocated"]):
+        errors.append(f"You are already allocated to room '{personAllocation['room']}'.")
+
     if(not checkCorrectPassword(zid, password)):
         errors.append("incorrect password")
     # TODO: TIME CHECKS
-    # if (not checkValidTime(zid, time)):
-    #     errors.append("before valid submit time")
+    if (not checkValidTime(zid, time)):
+        errors.append("before valid submit time")
     
     validRoom = roomOccupied(firstPreference)
     if(validRoom["occupied"]):
