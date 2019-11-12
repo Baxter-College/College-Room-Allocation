@@ -67,6 +67,26 @@ def findRoom(rList, roomNumber):
     
     return False
 
+# takes safe room, returns string of facts about room
+def getRoomFacts(room):
+    details = ''
+    if (room.bathroom):
+        details += "Ensuite"
+    
+    if (room.balc):
+        if (details != ''):
+            details += ", "
+        
+        if (room.front):
+            details += "front balc"
+        else:
+            details += "back balc"
+    
+    if (details != ''):
+        details = "("+details+")"
+        
+    return details
+
 def roomOccupied(roomNum):
     if (roomNum != ""):
         roomNum = int(roomNum)

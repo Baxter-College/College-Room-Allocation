@@ -114,7 +114,7 @@
                     <table>
                         {% for room, deets in data["MALE"][floor].items() %}
                             <tr id="{{room}}" class="unsure">
-                                <td name="roonum">{{room}}</td>
+                                <td name="roonum">{{room}} {{data["MALE"][floor][room]["roomFacts"]}}</td>
                                 <td name="deets"></td>
                             </tr>
                         {% endfor %}

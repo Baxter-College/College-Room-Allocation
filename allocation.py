@@ -18,7 +18,7 @@ ALLOCATE_EXAMPLE_FRESHERS = False
 
 
 from people import studentList, Student, findPerson, NUM_OF_SENIORS, NUM_OF_FRESHERS
-from rooms import roomList, Room, findRoom
+from rooms import roomList, Room, findRoom, getRoomFacts
 import math
 import csv
 ALLOCATION_CSV_PATH = "dataLists/allocation.csv"
@@ -74,9 +74,9 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
 
     for room in floor.rooms:
         if (room.assigned):
-            availableRooms[room.roomNumber] = {"available":False, "reason":"Occupied"}
+            availableRooms[room.roomNumber] = {"available":False, "reason":"Occupied", "roomFacts":getRoomFacts(room)}
         else:
-            availableRooms[room.roomNumber] = {"available":True, "reason":"OK"}
+            availableRooms[room.roomNumber] = {"available":True, "reason":"OK", "roomFacts":getRoomFacts(room)}
     
     floorSeniorCapacity = seniorCapacity(floorNum)
     

@@ -7,7 +7,7 @@ ZID:Gender
 
 
 Male avaliable:
-{Floor#:{roomNumber:{"avaliable":boolean,"reason":"ok/REASON"}}]}
+{Floor#:{roomNumber:{"avaliable":boolean,"reason":"ok/REASON", "roomFacts":"Front balcony, ensuite"}}]}
 
 Female avaliable:
-{Floor#:{roomNumber:{"avaliable":boolean,"reason":"ok/REASON"}}]}
+{Floor#:{roomNumber:{"avaliable":boolean,"reason":"ok/REASON", "roomFacts":"Front balcony, ensuite"}}]}
