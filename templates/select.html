@@ -1,131 +1,243 @@
-{% extends "layout.html" %}
+{% extends "layout.html" %} {% block title %} Select Room {% endblock %} {%
+block content %}
 
-{% block title %} Select Room {% endblock %}
+<div class="columns is-centered" style="margin-top:40px;">
+  <h1 class="title is-4 is-centered">Select Rooms</h1>
+</div>
 
-{% block content %}
-    <h1>Select Rooms</h1>
-    <script type="text/javascript">
-        var True = true;
-        var False = false;
-        var data = {{data|safe}};
-        console.log(data);
-        var display_floor = 1;
-        var gender = "";
-        function get_gender(zid) {
-            return data["ZIDS"][zid];
-        }
-        function get_rooms(zid) {
-            var gender = get_gender(zid);
-            if (gender == "m") {
-                return data["MALE"]
-            } else {
-                return data["FEMALE"]
-            }
-        }
-        function update_rooms(zid) {
-            var rooms = get_rooms(zid);
-            for (var floor in rooms) {
-                var count = 0;
-                for (var room in rooms[floor]) {
-                    room_ele = document.getElementById(room);
-                    room_ele.className.replace(" available", "");
-                    room_ele.className.replace(" unavailable", "");
-                    room_ele.children[1].innerHTML = rooms[floor][room]["reason"];
-                    if (rooms[floor][room]["available"]) {
-                        count++;
-                        room_ele.className += " available";
-                    } else {
-                        room_ele.className += " unavailable";
-                    }
-                }
-                floor = document.getElementById("floor" + floor);
-                floor.className.replace(" available", "");
-                floor.className.replace(" unavailable", "");
-                if (count > 0) {
-                    floor.className += " available";
-                } else {
-                    floor.className += " unavailable";
-                }
-            }
-        }
-        function valid_zid(zid) {
-            return zid in data["ZIDS"]
-        }
-        function zid_update(evt) {
-            var zid = evt.currentTarget.value
-            if (!valid_zid(zid)) {
-                evt.currentTarget.style.color = "red"
-            } else {
-                evt.currentTarget.style.color = "black"
-                update_rooms(zid);
-            }
-        }
-        function removeElement(elementId) {
-            // Removes an element from the document
-            var element = document.getElementById(elementId);
-            element.parentNode.removeChild(element);
-        }
+<div class="columns is-centered">
+  <div class="column is-6">
+    <form
+      class="form"
+      name="room_form"
+      onsubmit="return validate_form()"
+      method="POST"
+    >
+      <div class="field">
+        <label for="zid" class="label">ZID:</label>
 
-        function validate_form(){
-            // TODO: validate the form before send
-        }
-        function viewFloor(evt, floor) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].style.display = "none";
-            }
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            document.getElementById(floor).style.display = "block";
-            evt.currentTarget.className += " active"
-        }
-    </script>
-    <form name="room_form" onsubmit="return validate_form()" method="POST">
-        <h3>ZID:</h3>
-        <input type="text" id="zid" placeholder="enter your zid" name="zid" oninput="zid_update(event)">
-        <h3>Code:</h3>
-        <input type="text" id="code" placeholder="enter your code" name="code">
-        <h3>Secure a room:</h3>
-        <input type="text" id="first_room" placeholder="which room do you want" name="first_room">
-
-        <h3>Other preferences:</h3>
-        <input type="text" id="pref1" placeholder="enter first other preference" name="pref1">
-        <input type="text" id="pref2" placeholder="enter second other preference" name="pref2">
-        <input type="text" id="pref3" placeholder="enter third other preference" name="pref3">
-        <input type="text" id="pref4" placeholder="enter fourth other preference" name="pref4">
-        <input type="text" id="pref5" placeholder="enter fifth other preference" name="pref5">
-        
-        <input type="submit"  name = "submit" value="secure my room">
-    </form>
-    <h2>Browse Rooms:</h2>
-    <div class="tab">
-        {% for floor, rooms in data["MALE"].items() %}
-            <button id="floor{{floor}}" class="tablinks unsure" onclick="viewFloor(event, {{floor}})" value="Floor">Floor {{floor}}</button>
-        {% endfor %}
-    </div>
-
-    {% for floor, rooms in data["MALE"].items() %}
-        <div id="{{floor}}" class="tabcontent">
-            <div class="row">
-                <div class="column">
-                    <table>
-                        {% for room, deets in data["MALE"][floor].items() %}
-                            <tr id="{{room}}" class="unsure">
-                                <td name="roonum">{{room}} {{data["MALE"][floor][room]["roomFacts"]}}</td>
-                                <td name="deets"></td>
-                            </tr>
-                        {% endfor %}
-                    </table>
-                </div>
-                <div class="vl"></div>
-                <div class="column">
-                    <img src="/static/FloorPlans/Floor{{floor}}.jpg">
-                </div>
-              </div>
+        <div class="control">
+          <input
+            type="text"
+            id="zid"
+            placeholder="enter your zid"
+            name="zid"
+            oninput="zid_update(event)"
+            class="input"
+          />
         </div>
-    {% endfor %}
+      </div>
 
-    {% endblock %}
+      <div class="field">
+        <label for="code" class="label">Code:</label>
+        <div class="control">
+          <input
+            class="input"
+            type="text"
+            id="code"
+            placeholder="enter your code"
+            name="code"
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="first_room" class="label">Secure a room:</label>
+        <div class="control">
+          <input
+            type="number"
+            id="first_room"
+            placeholder="which room do you want"
+            name="first_room"
+            class="input"
+          />
+        </div>
+      </div>
+
+      <h3>Other preferences:</h3>
+      <div class="control">
+        <input
+          type="number"
+          id="pref1"
+          placeholder="enter first other preference"
+          name="pref1"
+          class="input"
+          style="margin-top:10px;"
+        />
+      </div>
+
+      <div class="control">
+        <input
+          type="number"
+          id="pref2"
+          placeholder="enter second other preference"
+          name="pref2"
+          class="input"
+          style="margin-top:10px;"
+        />
+      </div>
+
+      <div class="control">
+        <input
+          type="number"
+          id="pref3"
+          placeholder="enter third other preference"
+          name="pref3"
+          class="input"
+          style="margin-top:10px;"
+        />
+      </div>
+
+      <div class="control">
+        <input
+          type="number"
+          id="pref4"
+          placeholder="enter fourth other preference"
+          name="pref4"
+          class="input"
+          style="margin-top:10px;"
+        />
+      </div>
+
+      <div class="control">
+        <input
+          type="number"
+          id="pref5"
+          placeholder="enter fifth other preference"
+          name="pref5"
+          class="input"
+          style="margin-top:10px;"
+        />
+      </div>
+
+      <input
+        class="button is-info"
+        type="submit"
+        name="submit"
+        value="secure my room"
+      />
+    </form>
+  </div>
+</div>
+
+<h2 class="title is-5">Browse Rooms:</h2>
+<div class="tab">
+  {% for floor, rooms in data["MALE"].items() %}
+
+  <button
+    id="floor{{ floor }}"
+    class="tablinks unsure"
+    onclick="viewFloor(event, {{ floor }})"
+    value="Floor"
+  >
+    Floor {{ floor }}
+  </button>
+
+  {% endfor %}
+</div>
+
+{% for floor, rooms in data["MALE"].items() %}
+
+<div id="{{ floor }}" class="tabcontent">
+  <div class="row">
+    <div class="column">
+      <table>
+        {% for room, deets in data["MALE"][floor].items() %}
+        <tr id="{{ room }}" class="unsure">
+          <td name="roonum">
+            {{ room }} {{ data["MALE"][floor][room]["roomFacts"] }}
+          </td>
+          <td name="deets"></td>
+        </tr>
+        {% endfor %}
+      </table>
+    </div>
+    <div class="vl"></div>
+    <div class="column">
+      <img src="/static/FloorPlans/Floor{{ floor }}.jpg" />
+    </div>
+  </div>
+</div>
+
+{% endfor %}
+
+<script type="text/javascript">
+  var True = true;
+  var False = false;
+  var data = {{data|safe}};
+  console.log(data);
+  var display_floor = 1;
+  var gender = "";
+  function get_gender(zid) {
+      return data["ZIDS"][zid];
+  }
+  function get_rooms(zid) {
+      var gender = get_gender(zid);
+      if (gender == "m") {
+          return data["MALE"]
+      } else {
+          return data["FEMALE"]
+      }
+  }
+  function update_rooms(zid) {
+      var rooms = get_rooms(zid);
+      for (var floor in rooms) {
+          var count = 0;
+          for (var room in rooms[floor]) {
+              room_ele = document.getElementById(room);
+              room_ele.className.replace(" available", "");
+              room_ele.className.replace(" unavailable", "");
+              room_ele.children[1].innerHTML = rooms[floor][room]["reason"];
+              if (rooms[floor][room]["available"]) {
+                  count++;
+                  room_ele.className += " available";
+              } else {
+                  room_ele.className += " unavailable";
+              }
+          }
+          floor = document.getElementById("floor" + floor);
+          floor.className.replace(" available", "");
+          floor.className.replace(" unavailable", "");
+          if (count > 0) {
+              floor.className += " available";
+          } else {
+              floor.className += " unavailable";
+          }
+      }
+  }
+  function valid_zid(zid) {
+      return zid in data["ZIDS"]
+  }
+  function zid_update(evt) {
+      var zid = evt.currentTarget.value
+      if (!valid_zid(zid)) {
+          evt.currentTarget.style.color = "red"
+      } else {
+          evt.currentTarget.style.color = "black"
+          update_rooms(zid);
+      }
+  }
+  function removeElement(elementId) {
+      // Removes an element from the document
+      var element = document.getElementById(elementId);
+      element.parentNode.removeChild(element);
+  }
+
+  function validate_form(){
+      // TODO: validate the form before send
+  }
+  function viewFloor(evt, floor) {
+      var i, tabcontent, tablinks;
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+          tabcontent[i].style.display = "none";
+      }
+      tablinks = document.getElementsByClassName("tablinks");
+      for (i = 0; i < tablinks.length; i++) {
+          tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+      document.getElementById(floor).style.display = "block";
+      evt.currentTarget.className += " active"
+  }
+</script>
+{% endblock %}

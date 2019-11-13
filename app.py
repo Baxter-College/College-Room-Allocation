@@ -8,6 +8,7 @@ from allocation import (
 )
 from people import (
     getStudentList,
+    getStudentsByRoomPoints,
     checkCorrectPassword,
     checkValidTime,
     checkPersonAllocated,
@@ -63,6 +64,12 @@ def select_rooms():
         pass
 
 
+@app.route("/mailer", methods=["GET", "POST"])
+def mailer():
+    if request.method == "GET":
+        return render_template("mailer.html", students=getStudentsByRoomPoints())
+
+
 def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
     errors = []
     time = datetime.datetime.now()
@@ -105,6 +112,6 @@ def get_data():
 
 
 if __name__ == "__main__":
-    send_message()
+    # send_message()
     app.run(debug=True, port=8888)
 
