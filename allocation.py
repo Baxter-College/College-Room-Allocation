@@ -88,7 +88,7 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
         if floorSeniorCount > floorSeniorCapacity:
             for room in availableRooms:
                 if (availableRooms[room]["available"]):
-                    availableRooms[room] = {"available":False, "reason":"Too many seniors on this floor. RULE #1"}
+                    availableRooms[room] = {"available":False, "reason":"Too many seniors on this floor. RULE #1", "roomFacts":getRoomFacts(room)}
             return availableRooms
     
     if EQUALISE_ONFLOOR_SENIOR_GENDER_BALANCE and isSenior:
@@ -98,7 +98,7 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
         if ((floorSeniorCapacity - genderCount)/floorSeniorCapacity) < (0.5 - GENDER_BALANCE_PERCENTAGE_LENIENCY):
             for room in availableRooms:
                 if (availableRooms[room]["available"]):
-                    availableRooms[room] = {"available":False, "reason":"Too many seniors on this floor of your gender. RULE #2"}
+                    availableRooms[room] = {"available":False, "reason":"Too many seniors on this floor of your gender. RULE #2", "roomFacts":getRoomFacts(room)}
             return availableRooms
 
     if EQUALISE_ONFLOOR_GENDER_BALANCE:
@@ -108,21 +108,21 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
         if (genderCount/numOfRooms) > (0.5 + GENDER_BALANCE_PERCENTAGE_LENIENCY):
             for room in availableRooms:
                 if (availableRooms[room]["available"]):
-                    availableRooms[room] = {"available":False, "reason":"Too many people on this floor of your gender. RULE #3"}
+                    availableRooms[room] = {"available":False, "reason":"Too many people on this floor of your gender. RULE #3", "roomFacts":getRoomFacts(room)}
             return availableRooms
 
 
     for room in floor.rooms:
         if not room.assigned:
             if room.rf:
-                availableRooms[room.roomNumber] = {"available":False, "reason":"RF room"}
+                availableRooms[room.roomNumber] = {"available":False, "reason":"RF room", "roomFacts":getRoomFacts(room)}
                 continue
             
             if room.front and room.balc:
                 divInfo = getDivisionInformation(floorNum, room.SubDivisionNumber)
                 
                 if NUMBER_OF_SENIORS_FRONT_BALC <= divInfo["numSenior"] and isSenior:
-                    availableRooms[room.roomNumber] = {"available":False, "reason":"Too many seniors on this balc. RULE #4"}
+                    availableRooms[room.roomNumber] = {"available":False, "reason":"Too many seniors on this balc. RULE #4", "roomFacts":getRoomFacts(room)}
                     continue
                 
                 if EQUALISE_ONBALC_GENDER_BALANCE:
@@ -133,7 +133,7 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
                         currGenderCount = divInfo["numFemale"]
 
                     if (divInfo["numOfRooms"] - currGenderCount)/divInfo["numOfRooms"] <= 0.5:
-                        availableRooms[room.roomNumber] = {"available":False, "reason":"Too many people on this balc with your gener. RULE #5"}
+                        availableRooms[room.roomNumber] = {"available":False, "reason":"Too many people on this balc with your gener. RULE #5", "roomFacts":getRoomFacts(room)}
                         continue
                 
                 
@@ -141,7 +141,7 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
                 if (ALTERNATING_GENDERS_ROOM_SEPERATION != 0):
                     surroundingCount = countAdjacentRooms(room, ALTERNATING_GENDERS_ROOM_SEPERATION)
                     if (surroundingCount[gender]/ALTERNATING_GENDERS_ROOM_SEPERATION > 0.5):
-                        availableRooms[room.roomNumber] = {"available":False, "reason":"Trying to alternate rooms. RULE #3"}
+                        availableRooms[room.roomNumber] = {"available":False, "reason":"Trying to alternate rooms. RULE #3", "roomFacts":getRoomFacts(room)}
                         continue
     outp = {}
     for key in availableRooms:
