@@ -1,0 +1,69 @@
+{% extends "layout.html" %} {% block title %} Student Mailer {% endblock %} {%
+block content %}
+
+<div class="columns is-centered">
+  <div class="column is-3">
+    <h1 class="title is-3">Student Mailer</h1>
+  </div>
+</div>
+
+<div class="columns is-centered">
+  <div class="column is-6">
+    <div class="notification is-dark">
+      <p>Room allocation is in progress.</p>
+      <progress class="progress is-info" value="45" max="100">45%</progress>
+      <button class="button is-danger">Halt</button>
+    </div>
+  </div>
+</div>
+
+<div class="columns is-centered">
+  <div class="column is-6">
+    <form class="form">
+      <div class="field">
+        <label for="starttime" class="label">Start time</label>
+        <div class="control">
+          <input type="datetime-local" name="starttime" id="" />
+        </div>
+      </div>
+      <div class="field">
+        <div class="control">
+          <button class="button is-success">Begin Room Allocation</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="columns is-centered">
+  <div class="column is-10">
+    <table
+      class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
+    >
+      <thead>
+        <th>Student</th>
+        <th>zID</th>
+        <th>Room Points</th>
+        <th>Notification Time</th>
+        <th>Emailed?</th>
+        <th>Done Selection?</th>
+        <th>Allocated Room</th>
+      </thead>
+      <tbody>
+        {% for s in students %}
+        <tr>
+          <td>{{ s["name"] }}</td>
+          <td>{{ s["zID"] }}</td>
+          <td>{{ s["roomPoints"] }}</td>
+          <td>{{ s["startTime"] }}</td>
+          <td><span class="tag is-success">Yes</span></td>
+          <td><span class="tag is-warning">No</span></td>
+          <td>N/A</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
