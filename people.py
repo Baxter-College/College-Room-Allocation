@@ -157,6 +157,10 @@ def getStudentsByRoomPoints():
     return [x.json() for x in sortedList]
 
 
+def calculatePercentageAllocated():
+    return (len([x for x in studentList if x.assigned]) / len(studentList)) * 100
+
+
 def findPerson(personList, zID):
     for person in personList:
         if person.zID == zID:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from flask import Flask, render_template, request, json
+from flask import Flask, render_template, request, json, jsonify
 from allocation import (
     listAvailableRooms,
     makeAllocation,
@@ -12,6 +12,7 @@ from people import (
     checkCorrectPassword,
     checkValidTime,
     checkPersonAllocated,
+    calculatePercentageAllocated,
 )
 from rooms import roomOccupied
 from mail import send_message
@@ -68,6 +69,11 @@ def select_rooms():
 def mailer():
     if request.method == "GET":
         return render_template("mailer.html", students=getStudentsByRoomPoints())
+
+
+@app.route("/allocated", methods=["GET"])
+def allocated():
+    return jsonify({"allocated": calculatePercentageAllocated()})
 
 
 def checkValidRoomRequest(zid, password, firstPreference, subPreferences):

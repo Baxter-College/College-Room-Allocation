@@ -11,7 +11,9 @@ block content %}
   <div class="column is-6">
     <div class="notification is-dark">
       <p>Room allocation is in progress.</p>
-      <progress class="progress is-info" value="45" max="100">45%</progress>
+      <progress id="progressBar" class="progress is-info" value="0" max="100"
+        >0%</progress
+      >
       <button class="button is-danger">Halt</button>
     </div>
   </div>
@@ -56,14 +58,43 @@ block content %}
           <td>{{ s["zID"] }}</td>
           <td>{{ s["roomPoints"] }}</td>
           <td>{{ s["startTime"] }}</td>
-          <td><span class="tag is-success">Yes</span></td>
-          <td><span class="tag is-warning">No</span></td>
-          <td>N/A</td>
+          {% if s['year'] < 2 %}
+          <td>
+            <span class="tag is-danger">Fresher No Email</span>
+          </td>
+          <td>
+            N/A
+          </td>
+          {% else %}
+          <td>
+            <span class="tag is-success">Yes</span>
+          </td>
+          <td>
+            <span class="tag is-warning">No</span>
+          </td>
+          {% endif %}
+          <td>{{ s["assigned"] }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
+
+<script>
+  // Check percentage allocated
+  setInterval(function() {
+    fetch("/allocated")
+      .then(res => {
+        return res.json();
+      })
+      .then(res => {
+        console.log(res);
+        document
+          .getElementById("progressBar")
+          .setAttribute("value", res["allocated"]);
+      });
+  }, 10000);
+</script>
 
 {% endblock %}
