@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from flask import Flask, render_template, request, json, jsonify
+from flask import Flask, render_template, request, json, jsonify, redirect, url_for
 from allocation import (
     listAvailableRooms,
     makeAllocation,
@@ -22,6 +22,7 @@ import pytz
 import json
 import math
 from dotenv import load_dotenv
+import csv
 
 load_dotenv()
 
@@ -65,6 +66,22 @@ def select_rooms():
         # TODO: major error handler
         pass
 
+@app.route("/upload/file", methods=["GET", "POST"])
+def upload():
+    if request.method == "GET":
+        return render_template("upload.html")
+    else:
+        if "file" not in request.files:
+            print("no file")
+            return redirect(url_for("/upload/file"))
+        else:
+            file = request.files["file"]
+            if file.filename == "":
+                return redirect(request.url)
+            print(csv.DictReader(file))
+            for row in csv.DictReader(file):
+                print(row["RoomNumber"])
+            return {}
     
 # DEBUG: check valid rooms for computed occupied rooms
 
