@@ -59,14 +59,16 @@ def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
     
     validRoom = roomOccupied(firstPreference)
     if(validRoom["occupied"]):
-        roomNum = int(firstPreference)
-        roomList = listAvailableRooms((math.floor(roomNum/100)), getStudentList()[zid], True)
         if (validRoom["found"]):
             errors.append("room is occupied")
-        elif (roomNum in roomList):
-            errors.append("cannot allocate room due to rule")
         else:
             errors.append("room not found or invalid room number")
+    else:
+        roomNum = int(firstPreference)
+        roomList = listAvailableRooms((math.floor(roomNum/100)), getStudentList()[zid], True)
+        print(roomNum,roomList)
+        if (not roomList[firstPreference]['available']):
+            errors.append("cannot allocate room due to rule")
     
     return {"valid":(len(errors) == 0), "errors":errors}
     
