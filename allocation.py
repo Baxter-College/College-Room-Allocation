@@ -111,7 +111,7 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
                 
 # the number of seniors that can fit on all floors evenly
 def seniorCapacity(floorNum):
-    numOfSeniors = models.Student.select().where(models.Student.year > 1)
+    numOfSeniors = models.Student.select().where(models.Student.year > 1).count()
     overflow = numOfSeniors % 7
     if overflow != 0:
         
