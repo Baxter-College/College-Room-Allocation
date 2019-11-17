@@ -15,11 +15,11 @@ def getRoomFacts(room):
         if (foundRoom.front):
             details += "front balc"
         else:
-            details += "back balc"
+            details += "Back balc"
     
     if (details != ''):
         details = "("+details+")"
-        
+
     return details
 
 def roomOccupied(roomNum):
