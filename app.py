@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from flask import Flask, render_template, request, json
-from allocation import listAvailableRooms, makeAllocation, createFloors, loadAllocatedCSV
+from allocation import listAvailableRooms
 from people import getStudentList, checkCorrectPassword, checkValidTime, checkPersonAllocated
 from rooms import roomOccupied
 import datetime
@@ -10,8 +10,6 @@ import math
 
 app = Flask(__name__)
 
-createFloors()
-loadAllocatedCSV()
 
 @app.before_request
 def before_request():
@@ -41,7 +39,6 @@ def select_rooms():
         pass
 
     
-# DEBUG: check valid rooms for computed occupied rooms
 def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
     errors = []
     time = datetime.datetime.now()
