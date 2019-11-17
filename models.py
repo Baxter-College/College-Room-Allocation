@@ -1,6 +1,7 @@
 import os
 from urllib.parse import urlparse
 from peewee import *
+import math
 
 
 # TODO: add environ variables
@@ -32,6 +33,56 @@ class Floor(Base):
     # rooms = FoorToRoom Model
     numDivisions = IntegerField()
 
+    @classmethod
+    def createFloor(cls, floorNumber, numOfDivisions):
+        try:
+            newFloor = cls.create(
+                floorNumber=floorNumber,
+                numDivisions=numOfDivisions
+            )
+
+            return newFloor
+        except IntegrityError:
+            raise ValueError("Floor Already Exists")
+    
+    def numOfSeniors(self):
+        studentList = (Student.select()
+                            .join(Room)
+                            .where(Student.allocation==Room.roomNum)
+                            .where(Room.floorNum==self.floorNumber)
+                            .where(Student.year>1))
+        
+        return studentList.count()
+
+    def numOfFreshers(self):
+        studentList = (Student.select()
+                            .join(Room)
+                            .where(Student.allocation==Room.roomNum)
+                            .where(Room.floorNum==self.floorNumber)
+                            .where(Student.year==1))
+        
+        return studentList.count()
+
+    def numOfGender(self, isSenior=False):
+        maleCount = 0
+        femaleCount = 0
+
+        studentList = (Student.select()
+                            .join(Room)
+                            .where(Student.allocation==Room.roomNum)
+                            .where(Room.floorNum==self.floorNumber))
+
+        for student in studentList:
+            if isSenior and student.year == 1:
+                continue
+
+            if student.gender == "m":
+                maleCount += 1
+            if student.gender == "f":
+                femaleCount += 1
+        
+        return {"m":maleCount, "f":femaleCount}
+
     
 
 class Room(Base):
@@ -42,6 +93,24 @@ class Room(Base):
     SubDivisionNumber = IntegerField()
     assigned = BooleanField()
     floor = ForeignKeyField(Floor, backref="rooms")
+
+    @classmethod
+    def createRoom(cls, roomNum, bathroom, front, balc, SubDivisionNumber):
+        try:
+            floorNum = math.floor(roomNum/100)
+            newRoom = cls.create(
+                roomNumber = roomNum,
+                bathroom = bathroom,
+                front = front,
+                balc = balc,
+                SubDivisionNumber = SubDivisionNumber,
+                assigned = False,
+                floor = floorNum
+            )
+
+            return newRoom
+        except IntegrityError:
+            raise ValueError("Room Already Exists")
     
 
 class Student(Base):
@@ -54,6 +123,25 @@ class Student(Base):
     allocation = ForeignKeyField(Room, backref="occupant", null=True)
     password = CharField()
     startTime = DateTimeField(default=datetime.datetime.strptime("2050","%Y"))
+
+    @classmethod
+    def createStudent(cls, zid, name, year, gender, roomPoints, password, startTime):
+        try:
+            newStudent = cls.create(
+                zID = zid,
+                name = name,
+                year = year,
+                gender = gender,
+                roomPoints = roomPoints,
+                assigned = None,
+                allocation = None,
+                password = password,
+                startTime = startTime
+            )
+
+            return newStudent
+        except IntegrityError:
+            raise ValueError("Student Already Exists")
     
 
 class RoomPreferences(Base):
