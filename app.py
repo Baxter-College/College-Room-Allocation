@@ -2,7 +2,8 @@
 from flask import Flask, render_template, request, json, jsonify, redirect, url_for
 from io import StringIO
 from allocation import listAvailableRooms
-from people import getStudentList, checkCorrectPassword, checkValidTime, checkPersonAllocated, getStudentsByRoomPoints, calculatePercentageAllocated
+from people import getStudentList, checkCorrectPassword, checkValidTime, checkPersonAllocated 
+from people import getStudentsByRoomPoints, calculatePercentageAllocated, import_students
 from rooms import roomOccupied, makeAllocation, import_rooms
 from mail import send_message
 import datetime
@@ -72,6 +73,27 @@ def upload():
                 return redirect(request.url)
             csv_file = csv.DictReader(StringIO(string))
             import_rooms(csv_file)
+            return {}
+
+@app.route("/upload/people", methods=["POST"])
+def upload_p():
+    if request.method == "GET":
+        return render_template("upload.html")
+    else:
+        if "file" not in request.files:
+            print("no file")
+            return redirect(url_for("/upload/file"))
+        else:
+            file = request.files["file"]
+            #file = open("smth")
+            string = file.read().decode('utf-8')#
+            
+            #file = TextIOWrapper(file, encoding='utf-8')
+            if file.filename == "":
+                return redirect(request.url)
+            csv_file = csv.DictReader(StringIO(string))
+            import_students(csv_file)
+            return {}
     
 # DEBUG: check valid rooms for computed occupied rooms
 

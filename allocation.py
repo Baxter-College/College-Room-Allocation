@@ -124,6 +124,8 @@ def seniorCapacity(floorNum):
         maxNumOfSeniors = numOfSeniors/7
     
     # self.numOfSeniors-maxNumOfSeniors
+    if maxNumOfSeniors == 0:
+        return 1
     return maxNumOfSeniors
 
 def getDivisionInformation(floorNum, division):
@@ -135,7 +137,7 @@ def getDivisionInformation(floorNum, division):
     numSenior = 0
     numFresh = 0
 
-    for room in models.Room.select().where(models.Room.floorNum == floorNum & models.Room.SubDivisionNumber == division):
+    for room in models.Room.select().where(models.Room.floor == floorNum).where(models.Room.SubDivisionNumber == division):
         divisionRooms.append(room)
 
         if room.assigned == False:
