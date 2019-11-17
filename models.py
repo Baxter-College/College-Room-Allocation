@@ -57,6 +57,7 @@ class Student(Base):
     
 
 class RoomPreferences(Base):
+    pref_id = IntegerField(primary_key=True)
     preferanceNumber = IntegerField()
     student = ForeignKeyField(Student, backref="preferences")
     room = ForeignKeyField(Room, backref="studentSubPreferences")
