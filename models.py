@@ -1,9 +1,11 @@
 import os
 from urllib.parse import urlparse
-from peewee import *
+from peewee import * #pylint: disable=unused-wildcard-import
 import math
+import datetime
+from dotenv import load_dotenv
 
-
+load_dotenv()
 # TODO: add environ variables
 if "HEROKU" in os.environ:
     url = urlparse(os.environ["DATABASE_URL"])
@@ -31,20 +33,29 @@ class Base (Model):
 class Floor(Base):
     floorNumber = IntegerField(primary_key=True)
     # rooms = FoorToRoom Model
-    numDivisions = IntegerField()
+    # numDivisions = IntegerField()
 
     @classmethod
-    def createFloor(cls, floorNumber, numOfDivisions):
+    def createFloor(cls, floorNumber):
         try:
             newFloor = cls.create(
                 floorNumber=floorNumber,
-                numDivisions=numOfDivisions
+                # numDivisions=numOfDivisions
             )
 
             return newFloor
         except IntegrityError:
             raise ValueError("Floor Already Exists")
     
+    @classmethod
+    def findFloor(cls, floorNumber):
+        found =  cls.get_or_none(Floor.floorNumber == floorNumber)
+        if (found != None):
+            return found
+        else:
+            return None
+
+    @property
     def numOfSeniors(self):
         studentList = (Student.select()
                             .join(Room)
@@ -54,6 +65,7 @@ class Floor(Base):
         
         return studentList.count()
 
+    @property
     def numOfFreshers(self):
         studentList = (Student.select()
                             .join(Room)
@@ -83,11 +95,11 @@ class Floor(Base):
         
         return {"m":maleCount, "f":femaleCount}
 
-    
 
 class Room(Base):
     roomNumber = IntegerField(primary_key=True)
     bathroom = BooleanField()
+    rf = BooleanField()
     front = BooleanField()
     balc = BooleanField()
     SubDivisionNumber = IntegerField()
@@ -95,7 +107,7 @@ class Room(Base):
     floor = ForeignKeyField(Floor, backref="rooms")
 
     @classmethod
-    def createRoom(cls, roomNum, bathroom, front, balc, SubDivisionNumber):
+    def createRoom(cls, roomNum, bathroom, front, balc, rf, SubDivisionNumber):
         try:
             floorNum = math.floor(roomNum/100)
             newRoom = cls.create(
@@ -103,6 +115,7 @@ class Room(Base):
                 bathroom = bathroom,
                 front = front,
                 balc = balc,
+                rf = rf,
                 SubDivisionNumber = SubDivisionNumber,
                 assigned = False,
                 floor = floorNum
@@ -112,6 +125,27 @@ class Room(Base):
         except IntegrityError:
             raise ValueError("Room Already Exists")
     
+    @classmethod
+    def findRoom(cls, roomNumber):
+        found =  cls.get_or_none(Room.roomNumber == roomNumber)
+        if (found != None):
+            return found
+        else:
+            return False
+    
+    # newOccupant as zid
+    def assignRoom(self, newOccupant):
+        self.assigned = True
+        student = Student.get(Student.zID == newOccupant)
+        student.assigned = True
+        student.allocation = self.roomNumber
+    
+    # oldOccupant as zid
+    def clearAllocation(self):
+        self.assigned = False
+        student = self.occupant.get()
+        student.assigned = False
+        student.allocation = None
 
 class Student(Base):
     zID = CharField(primary_key=True)
@@ -123,6 +157,7 @@ class Student(Base):
     allocation = ForeignKeyField(Room, backref="occupant", null=True)
     password = CharField()
     startTime = DateTimeField(default=datetime.datetime.strptime("2050","%Y"))
+    otherPreferences = TextField(null=True)
 
     @classmethod
     def createStudent(cls, zid, name, year, gender, roomPoints, password, startTime):
@@ -143,9 +178,16 @@ class Student(Base):
         except IntegrityError:
             raise ValueError("Student Already Exists")
     
+    @classmethod
+    def findStudent(cls, zid):
+        found =  cls.get_or_none(Student.zID == zid)
+        if (found != None):
+            return found
+        else:
+            return False
 
-class RoomPreferences(Base):
-    pref_id = IntegerField(primary_key=True)
-    preferanceNumber = IntegerField()
-    student = ForeignKeyField(Student, backref="preferences")
-    room = ForeignKeyField(Room, backref="studentSubPreferences")
+def db_reset():
+    db.connect()
+    db.drop_tables([Student, Floor, Room])
+    db.create_tables([Student, Floor, Room])
+    db.close()

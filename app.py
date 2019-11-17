@@ -1,36 +1,20 @@
 #!/usr/bin/env python3
 from flask import Flask, render_template, request, json, jsonify, redirect, url_for
-from allocation import (
-    listAvailableRooms,
-    makeAllocation,
-    createFloors,
-    loadAllocatedCSV,
-)
-from people import (
-    getStudentList,
-    getStudentsByRoomPoints,
-    checkCorrectPassword,
-    checkValidTime,
-    checkPersonAllocated,
-    calculatePercentageAllocated,
-)
-from rooms import roomOccupied, import_rooms
+from io import StringIO
+from allocation import listAvailableRooms
+from people import getStudentList, checkCorrectPassword, checkValidTime, checkPersonAllocated, getStudentsByRoomPoints, calculatePercentageAllocated
+from rooms import roomOccupied, makeAllocation, import_rooms
 from mail import send_message
-from io import TextIOWrapper, StringIO
-
 import datetime
 import pytz
 import json
 import math
-from dotenv import load_dotenv
-import csv
+from models import db_reset
 
-load_dotenv()
+db_reset()
 
 app = Flask(__name__)
 
-createFloors()
-loadAllocatedCSV()
 
 
 @app.before_request
@@ -62,6 +46,8 @@ def select_rooms():
                 form["pref5"],
             ]
             checker = checkValidRoomRequest(zid, password, firstPref, subPref)
+            if (checker["valid"]):
+                makeAllocation(zid, int(firstPref), subPref)
             return render_template("submitted.html", data=checker)
     else:
         # TODO: major error handler
