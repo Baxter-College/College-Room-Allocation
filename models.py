@@ -153,6 +153,7 @@ class Student(Base):
     allocation = ForeignKeyField(Room, backref="occupant", null=True)
     password = CharField()
     startTime = DateTimeField(default=datetime.datetime.strptime("2050","%Y"))
+    otherPreferences = TextField(null=True)
 
     @classmethod
     def createStudent(cls, zid, name, year, gender, roomPoints, password, startTime):
@@ -180,9 +181,3 @@ class Student(Base):
             return found
         else:
             return False
-
-class RoomPreferences(Base):
-    pref_id = IntegerField(primary_key=True)
-    preferanceNumber = IntegerField()
-    student = ForeignKeyField(Student, backref="preferences")
-    room = ForeignKeyField(Room, backref="studentSubPreferences")

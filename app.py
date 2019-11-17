@@ -2,7 +2,7 @@
 from flask import Flask, render_template, request, json
 from allocation import listAvailableRooms
 from people import getStudentList, checkCorrectPassword, checkValidTime, checkPersonAllocated
-from rooms import roomOccupied
+from rooms import roomOccupied, makeAllocation
 import datetime
 import pytz
 import json
@@ -33,6 +33,8 @@ def select_rooms():
             firstPref = form["first_room"]
             subPref = [form["pref1"], form["pref2"], form["pref3"], form["pref4"], form["pref5"]]
             checker = checkValidRoomRequest(zid, password, firstPref, subPref)
+            if (checker["valid"]):
+                makeAllocation(zid, int(firstPref), subPref)
             return render_template("submitted.html", data=checker)
     else:
         # TODO: major error handler

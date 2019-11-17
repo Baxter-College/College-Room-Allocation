@@ -153,37 +153,37 @@ def getDivisionInformation(floorNum, division):
     return {"numOfRooms":numOfRooms, "numAvailable":numAvailable, "numMale":numMale, "numFemale":numFemale, "numSenior":numSenior, "numFresh":numFresh}
 
 # TODO: complete this with peewee
-def allocateFreshers():
-    unassignedMaleFreshers = []
-    unassignedFemaleFreshers = []
+# def allocateFreshers():
+#     unassignedMaleFreshers = []
+#     unassignedFemaleFreshers = []
 
-    allValidMale = []
-    allValidFemale = []
+#     allValidMale = []
+#     allValidFemale = []
 
-    for floor in range(NUMBER_OF_FLOORS):
-        floorNum = floor + 1
+#     for floor in range(NUMBER_OF_FLOORS):
+#         floorNum = floor + 1
 
-        allValidMale.extend(listAvailableRooms(floorNum,"m",True))
-        allValidFemale.extend(listAvailableRooms(floorNum,"f",True))
+#         allValidMale.extend(listAvailableRooms(floorNum,"m",True))
+#         allValidFemale.extend(listAvailableRooms(floorNum,"f",True))
 
 
-    for person in studentList:
-        if person.year == 1:
-            if person.assigned == False:
-                if person.gender == 'm':
-                    unassignedMaleFreshers.append(person)
-                elif person.gender == 'f':
-                    unassignedFemaleFreshers.append(person)
+#     for person in studentList:
+#         if person.year == 1:
+#             if person.assigned == False:
+#                 if person.gender == 'm':
+#                     unassignedMaleFreshers.append(person)
+#                 elif person.gender == 'f':
+#                     unassignedFemaleFreshers.append(person)
 
-    for room in models.Room.select():
-        if room.rf == True:
-            continue
-        elif room not in allValidMale and room.assigned == False:
-            makeAllocation(unassignedFemaleFreshers[0], room)
-            unassignedFemaleFreshers.pop(0)
-        elif room not in allValidFemale and room.assigned == False:
-            makeAllocation(unassignedMaleFreshers[0], room)
-            unassignedMaleFreshers.pop(0)
+#     for room in models.Room.select():
+#         if room.rf == True:
+#             continue
+#         elif room not in allValidMale and room.assigned == False:
+#             makeAllocation(unassignedFemaleFreshers[0], room)
+#             unassignedFemaleFreshers.pop(0)
+#         elif room not in allValidFemale and room.assigned == False:
+#             makeAllocation(unassignedMaleFreshers[0], room)
+#             unassignedMaleFreshers.pop(0)
 
 
 # Will return True if succsess, False if fail
@@ -206,6 +206,7 @@ def makeAllocation(zid, newRoomNum):
     newRoom.assignRoom(zid)
 
     if ALLOCATE_EXAMPLE_FRESHERS:
-        allocateFreshers()
+        pass
+        # allocateFreshers()
 
     return True
