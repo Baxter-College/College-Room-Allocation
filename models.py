@@ -2,8 +2,10 @@ import os
 from urllib.parse import urlparse
 from peewee import * #pylint: disable=unused-wildcard-import
 import math
+import datetime
+from dotenv import load_dotenv
 
-
+load_dotenv()
 # TODO: add environ variables
 if "HEROKU" in os.environ:
     url = urlparse(os.environ["DATABASE_URL"])

@@ -21,9 +21,7 @@ import datetime
 import pytz
 import json
 import math
-from dotenv import load_dotenv
 
-load_dotenv()
 
 app = Flask(__name__)
 
