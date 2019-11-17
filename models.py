@@ -53,7 +53,7 @@ class Floor(Base):
         if (found != None):
             return found
         else:
-            return False
+            return None
 
     @property
     def numOfSeniors(self):
@@ -155,6 +155,7 @@ class Student(Base):
     allocation = ForeignKeyField(Room, backref="occupant", null=True)
     password = CharField()
     startTime = DateTimeField(default=datetime.datetime.strptime("2050","%Y"))
+    otherPreferences = TextField(null=True)
 
     @classmethod
     def createStudent(cls, zid, name, year, gender, roomPoints, password, startTime):
@@ -183,8 +184,8 @@ class Student(Base):
         else:
             return False
 
-class RoomPreferences(Base):
-    pref_id = IntegerField(primary_key=True)
-    preferanceNumber = IntegerField()
-    student = ForeignKeyField(Student, backref="preferences")
-    room = ForeignKeyField(Room, backref="studentSubPreferences")
+def db_reset():
+    db.connect()
+    db.drop_tables([Student, Floor, Room])
+    db.create_tables([Student, Floor, Room])
+    db.close()

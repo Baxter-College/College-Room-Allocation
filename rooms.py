@@ -1,4 +1,5 @@
 import models
+import json
 
 # takes safe room, returns string of facts about room
 def getRoomFacts(room):
@@ -35,3 +36,9 @@ def roomOccupied(roomNum):
             return {"occupied":True, "found":False}
     else:
         return {"occupied":True, "found":False}
+
+def makeAllocation(zid, room, subPreferences):
+    room = models.Room.findRoom(room)
+    room.assignRoom(zid)
+    person = models.Student.findStudent(zid)
+    person.otherPreferences = json.dumps(subPreferences)

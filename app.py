@@ -1,27 +1,18 @@
 #!/usr/bin/env python3
 from flask import Flask, render_template, request, json, jsonify
-from allocation import (
-    listAvailableRooms,
-    makeAllocation,
-    createFloors,
-    loadAllocatedCSV,
-)
-from people import (
-    getStudentList,
-    getStudentsByRoomPoints,
-    checkCorrectPassword,
-    checkValidTime,
-    checkPersonAllocated,
-    calculatePercentageAllocated,
-)
+from allocation import listAvailableRooms
+from people import getStudentList, checkCorrectPassword, checkValidTime, checkPersonAllocated
+from rooms import roomOccupied, makeAllocation
 from rooms import roomOccupied
 from mail import send_message
-
 import datetime
 import pytz
 import json
 import math
+from dotenv import load_dotenv #pylint: disable=unused-wildcard-import
+from models import db_reset
 
+db_reset()
 
 app = Flask(__name__)
 
@@ -56,6 +47,8 @@ def select_rooms():
                 form["pref5"],
             ]
             checker = checkValidRoomRequest(zid, password, firstPref, subPref)
+            if (checker["valid"]):
+                makeAllocation(zid, int(firstPref), subPref)
             return render_template("submitted.html", data=checker)
     else:
         # TODO: major error handler
