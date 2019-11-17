@@ -14,7 +14,7 @@ from people import (
     checkPersonAllocated,
     calculatePercentageAllocated,
 )
-from rooms import roomOccupied
+from rooms import roomOccupied, import_rooms
 from mail import send_message
 from io import TextIOWrapper, StringIO
 
@@ -79,17 +79,12 @@ def upload():
             file = request.files["file"]
             #file = open("smth")
             string = file.read().decode('utf-8')#
-            csv_file = csv.DictReader(StringIO(string))
+            
             #file = TextIOWrapper(file, encoding='utf-8')
             if file.filename == "":
                 return redirect(request.url)
-            count = 0
-            for row in csv_file:
-                if count == 10:
-                    break
-                print(row)
-                count += 1
-            return {}
+            csv_file = csv.DictReader(StringIO(string))
+            import_rooms(csv_file)
     
 # DEBUG: check valid rooms for computed occupied rooms
 

@@ -28,37 +28,18 @@ class Room():
     def __str__(self):
         return f"Room: {self.roomNumber}"
 
-def importRooms():
-    
-    # Cleans a string where an empty cell = False, ordered means a number, otherwise value is true
-    def roomClean(string, ordered):
-        if string == "":
-                return False
-        
-        if ordered:
-            return int(string)
-        else:
-            return True
+def import_rooms(reader):
+    for i in range(1,8):
+        models.Floor.createFloor(i)
+    for row in reader:
+        roomNumber = int(row["RoomNumber"])
+        rf = bool(row["RF"])
+        bathroom = bool(row["Bathroom"])
+        front = bool(row["Front"])
+        balc = bool(row["Balc"])
+        SubDivisionNumber = int(row["SubDivisionNumber"])
 
-    with open(ROOM_CLASSIFICATION_PATH) as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            roomNumber = row["RoomNumber"]
-            rf = row["RF"]
-            bathroom = row["Bathroom"]
-            front = row["Front"]
-            balc = row["Balc"]
-            SubDivisionNumber = row["SubDivisionNumber"]
-
-            roomNumber = roomClean(roomNumber, True)
-            rf = roomClean(rf, False)
-            bathroom = roomClean(bathroom, False)
-            front = roomClean(front, False)
-            balc = roomClean(balc, False)
-            SubDivisionNumber = roomClean(SubDivisionNumber, True)
-
-            newRoom = Room(roomNumber, bathroom, front, balc, SubDivisionNumber, rf)
-            roomList.append(newRoom)
+        models.Room.createRoom(roomNumber, bathroom, front, balc, rf, SubDivisionNumber)
 
 def findRoom(rList, roomNumber):
     for room in rList:
@@ -103,5 +84,3 @@ def roomOccupied(roomNum):
             return {"occupied":True, "found":False}
     else:
         return {"occupied":True, "found":False}
-
-importRooms()
