@@ -2,8 +2,10 @@ import os
 from urllib.parse import urlparse
 from peewee import * #pylint: disable=unused-wildcard-import
 import math
+import datetime
+from dotenv import load_dotenv
 
-
+load_dotenv()
 # TODO: add environ variables
 if "HEROKU" in os.environ:
     url = urlparse(os.environ["DATABASE_URL"])
@@ -51,7 +53,7 @@ class Floor(Base):
         if (found != None):
             return found
         else:
-            return False
+            return None
 
     @property
     def numOfSeniors(self):
@@ -181,3 +183,9 @@ class Student(Base):
             return found
         else:
             return False
+
+def db_reset():
+    db.connect()
+    db.drop_tables([Student, Floor, Room])
+    db.create_tables([Student, Floor, Room])
+    db.close()

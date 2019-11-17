@@ -9,9 +9,10 @@ import datetime
 import pytz
 import json
 import math
-from dotenv import load_dotenv #pylint: disable: error
+from dotenv import load_dotenv #pylint: disable=unused-wildcard-import
+from models import db_reset
 
-load_dotenv()
+db_reset()
 
 app = Flask(__name__)
 

@@ -26,9 +26,11 @@ import math
 # floorNum is 1 indexed floor
 def listAvailableRooms(floorNum, gender=None, isSenior = False):
     floor = models.Floor.findFloor(floorNum)
+    if floor == None:
+        return {}
     availableRooms = {}
 
-    for room in floor.rooms:
+    for room in floor.rooms.select():
         if (room.assigned):
             availableRooms[room.roomNumber] = {"available":False, "reason":"Occupied", "roomFacts":getRoomFacts(room.roomNumber)}
         else:
