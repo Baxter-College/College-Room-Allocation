@@ -6,6 +6,7 @@ from rooms import roomOccupied
 import datetime
 import pytz
 import json
+import math
 
 app = Flask(__name__)
 
@@ -40,7 +41,7 @@ def select_rooms():
         pass
 
     
-
+# DEBUG: check valid rooms for computed occupied rooms
 def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
     errors = []
     time = datetime.datetime.now()
@@ -52,14 +53,18 @@ def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
 
     if(not checkCorrectPassword(zid, password)):
         errors.append("incorrect password")
-    # TODO: TIME CHECKS
+
     if (not checkValidTime(zid, time)):
         errors.append("before valid submit time")
     
     validRoom = roomOccupied(firstPreference)
     if(validRoom["occupied"]):
+        roomNum = int(firstPreference)
+        roomList = listAvailableRooms((math.floor(roomNum/100)), getStudentList()[zid], True)
         if (validRoom["found"]):
             errors.append("room is occupied")
+        elif (roomNum in roomList):
+            errors.append("cannot allocate room due to rule")
         else:
             errors.append("room not found or invalid room number")
     
