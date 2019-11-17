@@ -16,6 +16,7 @@ from people import (
 )
 from rooms import roomOccupied
 from mail import send_message
+from io import TextIOWrapper
 
 import datetime
 import pytz
