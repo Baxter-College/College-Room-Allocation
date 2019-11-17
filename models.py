@@ -59,7 +59,7 @@ class Floor(Base):
     def numOfSeniors(self):
         studentList = (Student.select()
                             .join(Room)
-                            .where(Student.allocation==Room.roomNum)
+                            .where(Student.allocation==Room.roomNumber)
                             .where(Room.floorNum==self.floorNumber)
                             .where(Student.year>1))
         
@@ -69,7 +69,7 @@ class Floor(Base):
     def numOfFreshers(self):
         studentList = (Student.select()
                             .join(Room)
-                            .where(Student.allocation==Room.roomNum)
+                            .where(Student.allocation==Room.roomNumber)
                             .where(Room.floorNum==self.floorNumber)
                             .where(Student.year==1))
         
@@ -81,7 +81,7 @@ class Floor(Base):
 
         studentList = (Student.select()
                             .join(Room)
-                            .where(Student.allocation==Room.roomNum)
+                            .where(Student.allocation==Room.roomNumber)
                             .where(Room.floorNum==self.floorNumber))
 
         for student in studentList:
@@ -127,7 +127,7 @@ class Room(Base):
     
     @classmethod
     def findRoom(cls, roomNumber):
-        found =  cls.get_or_none(Room.roomNumber == roomNumber)
+        found =  cls.get_or_none(Room.roomNumberber == roomNumber)
         if (found != None):
             return found
         else:
