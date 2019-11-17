@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from flask import Flask, render_template, request, json, jsonify
 from allocation import listAvailableRooms
-from people import getStudentList, checkCorrectPassword, checkValidTime, checkPersonAllocated
+from people import getStudentList, checkCorrectPassword, checkValidTime, checkPersonAllocated, getStudentsByRoomPoints, calculatePercentageAllocated
 from rooms import roomOccupied, makeAllocation
 from rooms import roomOccupied
 from mail import send_message
@@ -9,7 +9,7 @@ import datetime
 import pytz
 import json
 import math
-from dotenv import load_dotenv #pylint: disable=unused-wildcard-import
+from dotenv import load_dotenv #pylint: disable: error
 
 load_dotenv()
 

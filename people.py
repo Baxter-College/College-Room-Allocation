@@ -1,7 +1,8 @@
 import datetime
 import pytz
 import models
-
+from playhouse.shortcuts import model_to_dict
+import json
 
 def getStudentList():
     studentListGender = {}
@@ -46,3 +47,13 @@ def checkValidTime(zid, time):
 
             
     return False
+
+
+def getStudentsByRoomPoints():
+    studentList = models.Student.select().order_by(models.Student.roomPoints.desc())
+    return [json.dumps(model_to_dict(x)) for x in studentList]
+
+def calculatePercentageAllocated():
+    total = models.Student.select().count()
+    assigned = models.Student.select().where(models.Student.assigned == True).count()
+    return (assigned/total * 100)
