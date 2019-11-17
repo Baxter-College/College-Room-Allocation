@@ -44,7 +44,8 @@ class Floor(Base):
             )
 
             return newFloor
-        except IntegrityError:
+        except IntegrityError as e:
+            print("insert error! ", e)
             raise ValueError("Floor Already Exists")
     
     @classmethod
@@ -60,7 +61,7 @@ class Floor(Base):
         studentList = (Student.select()
                             .join(Room)
                             .where(Student.allocation==Room.roomNumber)
-                            .where(Room.floorNum==self.floorNumber)
+                            .where(Room.floor==self.floorNumber)
                             .where(Student.year>1))
         
         return studentList.count()
@@ -70,7 +71,7 @@ class Floor(Base):
         studentList = (Student.select()
                             .join(Room)
                             .where(Student.allocation==Room.roomNumber)
-                            .where(Room.floorNum==self.floorNumber)
+                            .where(Room.floor==self.floorNumber)
                             .where(Student.year==1))
         
         return studentList.count()
@@ -82,7 +83,7 @@ class Floor(Base):
         studentList = (Student.select()
                             .join(Room)
                             .where(Student.allocation==Room.roomNumber)
-                            .where(Room.floorNum==self.floorNumber))
+                            .where(Room.floor==self.floorNumber))
 
         for student in studentList:
             if isSenior and student.year == 1:
@@ -127,7 +128,7 @@ class Room(Base):
     
     @classmethod
     def findRoom(cls, roomNumber):
-        found =  cls.get_or_none(Room.roomNumberber == roomNumber)
+        found =  cls.get_or_none(Room.roomNumber == roomNumber)
         if (found != None):
             return found
         else:
@@ -188,6 +189,6 @@ class Student(Base):
 
 def db_reset():
     db.connect()
-    db.drop_tables([Student, Floor, Room])
-    db.create_tables([Student, Floor, Room])
+    #db.drop_tables([Student, Floor, Room], cascade=True)
+    db.create_tables([Student, Floor, Room], safe=True)
     db.close()

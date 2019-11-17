@@ -13,7 +13,25 @@ def getStudentList():
     
     return studentListGender
 
+def import_students(reader):
+    for row in reader:
+        zid = row["zID"]
+        name = row["StudentName"]
+        year = int(row["year"])
+        room_points = int(row["roomPoints"])
+        gender = row["gender"]
+        password = row["password"]
+        startTime = row["startTime"]
 
+        if startTime == "":
+            startTime = datetime.datetime.strptime("2050", "%Y")
+        else:
+            # in format "10:30AM 12/11/2019"
+            tz = pytz.timezone("Australia/Sydney")
+            startTime = datetime.datetime.strptime(startTime, "%I:%M%p %d/%m/%Y")
+            tz.localize(startTime)
+
+        models.Student.createStudent(zid, name, year, gender, room_points, password, startTime)
 
 def checkPersonAllocated(zid):
     person = models.Student.findStudent(zid)
