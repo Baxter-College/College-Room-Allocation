@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-from flask import Flask, render_template, request, json, jsonify
+from flask import Flask, render_template, request, json, jsonify, redirect, url_for
+from io import StringIO
 from allocation import listAvailableRooms
 from people import getStudentList, checkCorrectPassword, checkValidTime, checkPersonAllocated, getStudentsByRoomPoints, calculatePercentageAllocated
-from rooms import roomOccupied, makeAllocation
-from rooms import roomOccupied
+from rooms import roomOccupied, makeAllocation, import_rooms
 from mail import send_message
 import datetime
 import pytz
 import json
 import math
-from dotenv import load_dotenv #pylint: disable=unused-wildcard-import
 from models import db_reset
+import csv
 
 db_reset()
 
@@ -54,6 +54,26 @@ def select_rooms():
         # TODO: major error handler
         pass
 
+@app.route("/upload/file", methods=["GET", "POST"])
+def upload():
+    if request.method == "GET":
+        return render_template("upload.html")
+    else:
+        if "file" not in request.files:
+            print("no file")
+            return redirect(url_for("/upload/file"))
+        else:
+            file = request.files["file"]
+            #file = open("smth")
+            string = file.read().decode('utf-8')#
+            
+            #file = TextIOWrapper(file, encoding='utf-8')
+            if file.filename == "":
+                return redirect(request.url)
+            csv_file = csv.DictReader(StringIO(string))
+            import_rooms(csv_file)
+    
+# DEBUG: check valid rooms for computed occupied rooms
 
 @app.route("/mailer", methods=["GET", "POST"])
 def mailer():
