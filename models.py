@@ -33,14 +33,14 @@ class Base (Model):
 class Floor(Base):
     floorNumber = IntegerField(primary_key=True)
     # rooms = FoorToRoom Model
-    numDivisions = IntegerField()
+    # numDivisions = IntegerField()
 
     @classmethod
-    def createFloor(cls, floorNumber, numOfDivisions):
+    def createFloor(cls, floorNumber):
         try:
             newFloor = cls.create(
                 floorNumber=floorNumber,
-                numDivisions=numOfDivisions
+                # numDivisions=numOfDivisions
             )
 
             return newFloor
@@ -99,6 +99,7 @@ class Floor(Base):
 class Room(Base):
     roomNumber = IntegerField(primary_key=True)
     bathroom = BooleanField()
+    rf = BooleanField()
     front = BooleanField()
     balc = BooleanField()
     SubDivisionNumber = IntegerField()
@@ -106,7 +107,7 @@ class Room(Base):
     floor = ForeignKeyField(Floor, backref="rooms")
 
     @classmethod
-    def createRoom(cls, roomNum, bathroom, front, balc, SubDivisionNumber):
+    def createRoom(cls, roomNum, bathroom, front, balc, rf, SubDivisionNumber):
         try:
             floorNum = math.floor(roomNum/100)
             newRoom = cls.create(
@@ -114,6 +115,7 @@ class Room(Base):
                 bathroom = bathroom,
                 front = front,
                 balc = balc,
+                rf = rf,
                 SubDivisionNumber = SubDivisionNumber,
                 assigned = False,
                 floor = floorNum
