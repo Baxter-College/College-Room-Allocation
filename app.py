@@ -16,7 +16,7 @@ from people import (
 )
 from rooms import roomOccupied
 from mail import send_message
-from io import TextIOWrapper
+from io import TextIOWrapper, StringIO
 
 import datetime
 import pytz
@@ -77,11 +77,18 @@ def upload():
             return redirect(url_for("/upload/file"))
         else:
             file = request.files["file"]
+            #file = open("smth")
+            string = file.read().decode('utf-8')#
+            csv_file = csv.DictReader(StringIO(string))
+            #file = TextIOWrapper(file, encoding='utf-8')
             if file.filename == "":
                 return redirect(request.url)
-            print(csv.DictReader(file))
-            for row in csv.DictReader(file):
-                print(row["RoomNumber"])
+            count = 0
+            for row in csv_file:
+                if count == 10:
+                    break
+                print(row)
+                count += 1
             return {}
     
 # DEBUG: check valid rooms for computed occupied rooms
