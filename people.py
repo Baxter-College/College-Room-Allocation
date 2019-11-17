@@ -13,6 +13,7 @@ def getStudentList():
     return studentListGender
 
 
+
 def checkPersonAllocated(zid):
     person = models.Student.findStudent(zid)
     
@@ -28,8 +29,9 @@ def checkCorrectPassword(zid, password):
     if (person != None):
         if (person.password == password):
             return True
-    
+
     return False
+
 
 def checkValidTime(zid, time):
     person = models.Student.findStudent(zid)
