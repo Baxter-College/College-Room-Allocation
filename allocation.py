@@ -69,7 +69,7 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
                     availableRooms[room.roomNumber] = {"available":False, "reason":"Too many people on this floor of your gender. RULE #3", "roomFacts":getRoomFacts(room)}
             return availableRooms
 
-    roomList = models.Room.select().where(models.Room.assigned==False)
+    roomList = models.Room.select().where(models.Room.assigned==False).where(models.Room.floor == floorNum)
 
     for room in roomList:
         if room.rf:
