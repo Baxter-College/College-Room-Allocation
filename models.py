@@ -17,14 +17,15 @@ if "HEROKU" in os.environ:
         port=url.port,
     )
 else:
-    db_name = os.environ["DB_NAME"]
-    db_user = os.environ["DB_USER"]
-    db_pword = os.environ["DB_PASSWORD"]
-    db = PostgresqlDatabase(
-        db_name,
-        user=db_user,
-        password=db_pword,
-    )
+    # db_name = os.environ["DB_NAME"]
+    # db_user = os.environ["DB_USER"]
+    # db_pword = os.environ["DB_PASSWORD"]
+    # db = PostgresqlDatabase(
+    #     db_name,
+    #     user=db_user,
+    #     password=db_pword,
+    # )
+    db = SqliteDatabase('test1.db')
 
 class Base (Model):
     class Meta:
