@@ -143,13 +143,13 @@ def getDivisionInformation(floorNum, division):
         if room.assigned == False:
             numAvailable += 1
         else:
-            if room.occupant.gender == 'm':
+            if room.occupant.first().gender == 'm':
                 numMale += 1
-            if room.occupant.gender == 'f':
+            if room.occupant.first().gender == 'f':
                 numFemale += 1
-            if room.occupant.year > 1:
+            if room.occupant.first().year > 1:
                 numSenior += 1
-            if room.occupant.year == 1:
+            if room.occupant.first().year == 1:
                 numFresh += 1
 
     numOfRooms = len(divisionRooms)
@@ -200,7 +200,7 @@ def makeAllocation(zid, newRoomNum):
         return False
 
     # Can overwrite if occupant is fresher
-    if newRoom.assigned == True and newRoom.occupant.year > 1:
+    if newRoom.assigned == True and newRoom.occupant.first().year > 1:
         return False
     
     if student.assigned == True:

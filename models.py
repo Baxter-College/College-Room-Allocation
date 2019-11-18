@@ -3,9 +3,9 @@ from urllib.parse import urlparse
 from peewee import * #pylint: disable=unused-wildcard-import
 import math
 import datetime
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 # TODO: add environ variables
 if "HEROKU" in os.environ:
     url = urlparse(os.environ["DATABASE_URL"])
@@ -140,6 +140,8 @@ class Room(Base):
         student = Student.get(Student.zID == newOccupant)
         student.assigned = True
         student.allocation = self.roomNumber
+        self.save()
+        student.save()
     
     # oldOccupant as zid
     def clearAllocation(self):
@@ -147,6 +149,8 @@ class Room(Base):
         student = self.occupant.get()
         student.assigned = False
         student.allocation = None
+        self.save()
+        student.save()
 
 class Student(Base):
     zID = CharField(primary_key=True)
@@ -189,6 +193,6 @@ class Student(Base):
 
 def db_reset():
     db.connect()
-    #db.drop_tables([Student, Floor, Room], cascade=True)
+    # db.drop_tables([Student, Floor, Room])
     db.create_tables([Student, Floor, Room], safe=True)
     db.close()

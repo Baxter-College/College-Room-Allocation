@@ -73,7 +73,7 @@ def upload():
                 return redirect(request.url)
             csv_file = csv.DictReader(StringIO(string))
             import_rooms(csv_file)
-            return {}
+            return ''
 
 @app.route("/upload/people", methods=["POST"])
 def upload_p():
@@ -93,7 +93,7 @@ def upload_p():
                 return redirect(request.url)
             csv_file = csv.DictReader(StringIO(string))
             import_students(csv_file)
-            return {}
+            return ''
     
 # DEBUG: check valid rooms for computed occupied rooms
 

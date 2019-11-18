@@ -57,3 +57,4 @@ def makeAllocation(zid, room, subPreferences):
     room.assignRoom(zid)
     person = models.Student.findStudent(zid)
     person.otherPreferences = json.dumps(subPreferences)
+    person.save()
