@@ -2,8 +2,17 @@
 from flask import Flask, render_template, request, json, jsonify, redirect, url_for
 from io import StringIO
 from allocation import listAvailableRooms
-from people import getStudentList, checkCorrectPassword, checkValidTime, checkPersonAllocated 
-from people import getStudentsByRoomPoints, calculatePercentageAllocated, import_students
+from people import (
+    getStudentList,
+    checkCorrectPassword,
+    checkValidTime,
+    checkPersonAllocated,
+)
+from people import (
+    getStudentsByRoomPoints,
+    calculatePercentageAllocated,
+    import_students,
+)
 from rooms import roomOccupied, makeAllocation, import_rooms
 from mail import send_message
 import datetime
@@ -12,11 +21,11 @@ import json
 import math
 from models import db_reset
 import csv
+import os
 
 db_reset()
 
 app = Flask(__name__)
-
 
 
 @app.before_request
@@ -48,12 +57,13 @@ def select_rooms():
                 form["pref5"],
             ]
             checker = checkValidRoomRequest(zid, password, firstPref, subPref)
-            if (checker["valid"]):
+            if checker["valid"]:
                 makeAllocation(zid, int(firstPref), subPref)
             return render_template("submitted.html", data=checker)
     else:
         # TODO: major error handler
         pass
+
 
 @app.route("/upload/file", methods=["GET", "POST"])
 def upload():
@@ -65,15 +75,16 @@ def upload():
             return redirect(url_for("/upload/file"))
         else:
             file = request.files["file"]
-            #file = open("smth")
-            string = file.read().decode('utf-8')#
-            
-            #file = TextIOWrapper(file, encoding='utf-8')
+            # file = open("smth")
+            string = file.read().decode("utf-8")  #
+
+            # file = TextIOWrapper(file, encoding='utf-8')
             if file.filename == "":
                 return redirect(request.url)
             csv_file = csv.DictReader(StringIO(string))
             import_rooms(csv_file)
-            return ''
+            return ""
+
 
 @app.route("/upload/people", methods=["POST"])
 def upload_p():
@@ -85,17 +96,19 @@ def upload_p():
             return redirect(url_for("/upload/file"))
         else:
             file = request.files["file"]
-            #file = open("smth")
-            string = file.read().decode('utf-8')#
-            
-            #file = TextIOWrapper(file, encoding='utf-8')
+            # file = open("smth")
+            string = file.read().decode("utf-8")  #
+
+            # file = TextIOWrapper(file, encoding='utf-8')
             if file.filename == "":
                 return redirect(request.url)
             csv_file = csv.DictReader(StringIO(string))
             import_students(csv_file)
-            return ''
-    
+            return ""
+
+
 # DEBUG: check valid rooms for computed occupied rooms
+
 
 @app.route("/mailer", methods=["GET", "POST"])
 def mailer():
@@ -133,14 +146,15 @@ def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
             errors.append("room not found or invalid room number")
     else:
         roomNum = int(firstPreference)
-        roomList = listAvailableRooms((math.floor(roomNum/100)), getStudentList()[zid], True)
-        print(roomNum,roomList)
-        if (not roomList[firstPreference]['available']):
+        roomList = listAvailableRooms(
+            (math.floor(roomNum / 100)), getStudentList()[zid], True
+        )
+        print(roomNum, roomList)
+        if not roomList[firstPreference]["available"]:
             errors.append("cannot allocate room due to rule")
-    
-    return {"valid":(len(errors) == 0), "errors":errors}
-    
-    
+
+    return {"valid": (len(errors) == 0), "errors": errors}
+
 
 def get_data():
     studentList = getStudentList()
@@ -158,5 +172,9 @@ def get_data():
 
 if __name__ == "__main__":
     # send_message()
-    app.run(debug=True, port=8888)
+    if "HEROKU" in os.environ:
+        PORT = int(os.environ.get("PORT"))
+    else:
+        PORT = 8888
+    app.run(debug=True, port=PORT)
 
