@@ -198,6 +198,11 @@ class Student(Base):
         else:
             return False
 
+class Allocation(Base):
+    timeOfAllocation = DateField(default=datetime.datetime.now())
+    person = ForeignKeyField(Student, backref="allocation")
+    room = ForeignKeyField(Room, backref="occupant")
+    otherPreferences = TextField(null=True)
 
 def db_reset():
     db.connect()
