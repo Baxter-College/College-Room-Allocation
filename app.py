@@ -107,9 +107,6 @@ def upload_p():
             return ""
 
 
-# DEBUG: check valid rooms for computed occupied rooms
-
-
 @app.route("/mailer", methods=["GET", "POST"])
 def mailer():
     if request.method == "GET":

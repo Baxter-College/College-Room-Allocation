@@ -71,10 +71,13 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
                     availableRooms[room.roomNumber] = {"available":False, "reason":"Too many people on this floor of your gender. RULE #3", "roomFacts":getRoomFacts(room)}
             return availableRooms
 
-    roomList = models.Room.select().where(models.Room.assigned==False).where(models.Room.floor == floorNum)
+    allocatedList = models.Room.select().join(models.AllocatedRoom).where(models.AllocatedRoom.room.roomNumber == models.Room.roomNumber)
+    roomList = (models.Room.select()
+               .where(models.Room.floor == floorNum)
+               .where(models.Room.roomNumber.not_in(allocatedList)))
 
     for room in roomList:
-        if room.rf:
+        if room.rf == True:
             availableRooms[room.roomNumber] = {"available":False, "reason":"RF room", "roomFacts":getRoomFacts(room)}
             continue
         
@@ -148,13 +151,13 @@ def getDivisionInformation(floorNum, division):
         if room.assigned == False:
             numAvailable += 1
         else:
-            if models.Student.findStudent(room).gender == 'm':
+            if models.Student.findFromRoom(room).gender == 'm':
                 numMale += 1
-            if models.Student.findStudent(room).gender == 'f':
+            if models.Student.findFromRoom(room).gender == 'f':
                 numFemale += 1
-            if models.Student.findStudent(room).year > 1:
+            if models.Student.findFromRoom(room).year > 1:
                 numSenior += 1
-            if models.Student.findStudent(room).year == 1:
+            if models.Student.findFromRoom(room).year == 1:
                 numFresh += 1
 
     numOfRooms = len(divisionRooms)

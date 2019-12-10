@@ -198,6 +198,14 @@ class Student(Base):
             return found
         else:
             return False
+
+    @classmethod
+    def findFromRoom(cls, roomNum):
+        allocation = AllocatedRoom.get_or_none(AllocatedRoom.room == roomNum)
+        if allocation != None:
+            return allocation.person.get()
+        else:
+            return False
     
     @property
     def allocation(self):
@@ -236,6 +244,6 @@ class AllocatedRoom(Base):
 
 def db_reset():
     db.connect()
-    # db.drop_tables([Student, Floor, Room])
+    # db.drop_tables([Student, Floor, Room, AllocatedRoom])
     db.create_tables([Student, Floor, Room, AllocatedRoom], safe=True)
     db.close()

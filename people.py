@@ -38,7 +38,7 @@ def checkPersonAllocated(zid):
     
     if (person != None):
         if (person.assigned):
-            return {"allocated":True, "room":person.allocation}
+            return {"allocated":True, "room":person.allocation.get().room}
     
     return {"allocated":False, "room":False}
 
@@ -72,6 +72,6 @@ def getStudentsByRoomPoints():
     return [json.dumps(model_to_dict(x)) for x in studentList]
 
 def calculatePercentageAllocated():
-    total = models.Student.select().count()
+    total = models.Student.select().count() # pylint: disable=no-value-for-parameter
     assigned = models.Student.select().where(models.Student.assigned == True).count()
     return (assigned/total * 100)
