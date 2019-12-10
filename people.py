@@ -16,7 +16,7 @@ def getStudentList():
 def import_students(reader):
     for row in reader:
         zid = row["zID"]
-        name = row["StudentName"]
+        # name = row["StudentName"]
         year = int(row["year"])
         room_points = int(row["roomPoints"])
         gender = row["gender"]
@@ -31,7 +31,7 @@ def import_students(reader):
             startTime = datetime.datetime.strptime(startTime, "%I:%M%p %d/%m/%Y")
             tz.localize(startTime)
 
-        models.Student.createStudent(zid, name, year, gender, room_points, password, startTime)
+        models.Student.createStudent(zid, year, gender, room_points, password, startTime)
 
 def checkPersonAllocated(zid):
     person = models.Student.findStudent(zid)

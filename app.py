@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 from flask import Flask, render_template, request, json, jsonify, redirect, url_for
 from io import StringIO
-from allocation import listAvailableRooms
+from allocation import listAvailableRooms, makeAllocation
 from people import (
     getStudentList,
     checkCorrectPassword,
     checkValidTime,
-    checkPersonAllocated,
+    checkPersonAllocated
 )
 from people import (
     getStudentsByRoomPoints,
     calculatePercentageAllocated,
     import_students,
 )
-from rooms import roomOccupied, makeAllocation, import_rooms
+from rooms import roomOccupied, import_rooms
 from mail import send_message
 import datetime
 import pytz

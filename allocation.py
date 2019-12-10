@@ -20,6 +20,7 @@ ALLOCATE_EXAMPLE_FRESHERS = False
 from rooms import getRoomFacts
 import models
 import math
+import json
 
 
 
@@ -50,10 +51,11 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
             return availableRooms
     
     if EQUALISE_ONFLOOR_SENIOR_GENDER_BALANCE and isSenior:
+        
         genderCount = floor.numOfGender(isSenior=True)[gender]
+        floorSeniorGenderCapacity = seniorCapacity(floorNum, gender)
 
-
-        if ((floorSeniorCapacity - genderCount)/floorSeniorCapacity) < (0.5 - GENDER_BALANCE_PERCENTAGE_LENIENCY):
+        if ((floorSeniorGenderCapacity - genderCount)/floorSeniorGenderCapacity) < (0.5 - GENDER_BALANCE_PERCENTAGE_LENIENCY):
             for room in availableRooms:
                 if (availableRooms[room.roomNumber]["available"]):
                     availableRooms[room.roomNumber] = {"available":False, "reason":"Too many seniors on this floor of your gender. RULE #2", "roomFacts":getRoomFacts(room)}
@@ -76,42 +78,45 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
             availableRooms[room.roomNumber] = {"available":False, "reason":"RF room", "roomFacts":getRoomFacts(room)}
             continue
         
+        divInfo = getDivisionInformation(floorNum, room.SubDivisionNumber)
+        currGenderCount = 0
+        if gender == 'm':
+            currGenderCount = divInfo["numMale"]
+        elif gender == 'f':
+            currGenderCount = divInfo["numFemale"]
+
         if room.front and room.balc:
-            divInfo = getDivisionInformation(floorNum, room.SubDivisionNumber)
             
             if NUMBER_OF_SENIORS_FRONT_BALC <= divInfo["numSenior"] and isSenior:
                 availableRooms[room.roomNumber] = {"available":False, "reason":"Too many seniors on this balc. RULE #4", "roomFacts":getRoomFacts(room)}
                 continue
             
             if EQUALISE_ONBALC_GENDER_BALANCE:
-                currGenderCount = 0
-                if gender == 'm':
-                    currGenderCount = divInfo["numMale"]
-                elif gender == 'f':
-                    currGenderCount = divInfo["numFemale"]
-
                 if (divInfo["numOfRooms"] - currGenderCount)/divInfo["numOfRooms"] <= 0.5:
-                    availableRooms[room.roomNumber] = {"available":False, "reason":"Too many people on this balc with your gener. RULE #5", "roomFacts":getRoomFacts(room)}
+                    availableRooms[room.roomNumber] = {"available":False, "reason":"Too many people on this balc with your gender. RULE #5", "roomFacts":getRoomFacts(room)}
                     continue
             
             
         else:
-            # DEBUG: need to change alternating genders to subdevision
-            if (ALTERNATING_GENDERS_ROOM_SEPERATION != 0):
-                pass
-                # surroundingCount = countAdjacentRooms(room, ALTERNATING_GENDERS_ROOM_SEPERATION)
-                # if (surroundingCount[gender]/ALTERNATING_GENDERS_ROOM_SEPERATION > 0.5):
-                #     availableRooms[room.roomNumber] = {"available":False, "reason":"Trying to alternate rooms. RULE #3"}
-                #     continue
+            if ALTERNATING_GENDERS_ROOM_SEPERATION:
+                if (divInfo["numOfRooms"] - currGenderCount)/divInfo["numOfRooms"] <= 0.5:
+                    availableRooms[room.roomNumber] = {"available":False, "reason":"Too many people in this sub-divison. RULE #3", "roomFacts":getRoomFacts(room)}
+                    continue
+                
+                
     outp = {}
     for key in availableRooms:
         outp[str(key)] = availableRooms[key]
     
     return outp
-                
-# the number of seniors that can fit on all floors evenly
-def seniorCapacity(floorNum):
-    numOfSeniors = models.Student.select().where(models.Student.year > 1).count()
+
+# the number of seniors that can fit on all floors evenly. if gender is included, will show the distrobution of the gender
+def seniorCapacity(floorNum, gender=None):
+    if (gender != None):
+        numOfSeniors = models.Student.select().where(models.Student.year > 1).where(models.Student.gender == gender).count()
+    else:
+        numOfSeniors = models.Student.select().where(models.Student.year > 1).count()
+
     overflow = numOfSeniors % 7
     if overflow != 0:
         
@@ -143,13 +148,13 @@ def getDivisionInformation(floorNum, division):
         if room.assigned == False:
             numAvailable += 1
         else:
-            if room.occupant.first().gender == 'm':
+            if models.Student.findStudent(room).gender == 'm':
                 numMale += 1
-            if room.occupant.first().gender == 'f':
+            if models.Student.findStudent(room).gender == 'f':
                 numFemale += 1
-            if room.occupant.first().year > 1:
+            if models.Student.findStudent(room).year > 1:
                 numSenior += 1
-            if room.occupant.first().year == 1:
+            if models.Student.findStudent(room).year == 1:
                 numFresh += 1
 
     numOfRooms = len(divisionRooms)
@@ -192,7 +197,7 @@ def getDivisionInformation(floorNum, division):
 
 # Will return True if succsess, False if fail
 # Takes zid and roomnum
-def makeAllocation(zid, newRoomNum):
+def makeAllocation(zid, newRoomNum, subPreferences):
     student = models.Student.findStudent(zid)
     newRoom = models.Room.findRoom(newRoomNum)
 
@@ -203,11 +208,7 @@ def makeAllocation(zid, newRoomNum):
     if newRoom.assigned == True and newRoom.occupant.first().year > 1:
         return False
     
-    if student.assigned == True:
-        oldRoom = student.allocation
-        oldRoom.clearAllocation()
-    
-    newRoom.assignRoom(zid)
+    models.AllocatedRoom.makeAllocation(zid, newRoomNum, json.dumps(subPreferences))
 
     if ALLOCATE_EXAMPLE_FRESHERS:
         pass

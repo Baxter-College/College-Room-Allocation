@@ -18,11 +18,15 @@ if "HEROKU" in os.environ:
         port=url.port,
     )
 else:
-    db_name = os.environ["DB_NAME"]
-    db_user = os.environ["DB_USER"]
-    db_pword = os.environ["DB_PASSWORD"]
-    db = PostgresqlDatabase(db_name, user=db_user, password=db_pword)
-    # db = SqliteDatabase('test1.db')
+    import getpass
+    username = getpass.getuser()
+    if (username == "twright" or username == "tdcwr"):
+        db = SqliteDatabase('test1.db')
+    else:
+        db_name = os.environ["DB_NAME"]
+        db_user = os.environ["DB_USER"]
+        db_pword = os.environ["DB_PASSWORD"]
+        db = PostgresqlDatabase(db_name, user=db_user, password=db_pword)
 
 
 class Base(Model):
@@ -60,8 +64,10 @@ class Floor(Base):
     def numOfSeniors(self):
         studentList = (
             Student.select()
+            .join(AllocatedRoom)
             .join(Room)
-            .where(Student.allocation == Room.roomNumber)
+            .where(Student.zID == AllocatedRoom.person)
+            .where(AllocatedRoom.room == Room.roomNumber)
             .where(Room.floor == self.floorNumber)
             .where(Student.year > 1)
         )
@@ -72,8 +78,10 @@ class Floor(Base):
     def numOfFreshers(self):
         studentList = (
             Student.select()
+            .join(AllocatedRoom)
             .join(Room)
-            .where(Student.allocation == Room.roomNumber)
+            .where(Student.zID == AllocatedRoom.person)
+            .where(AllocatedRoom.room == Room.roomNumber)
             .where(Room.floor == self.floorNumber)
             .where(Student.year == 1)
         )
@@ -86,8 +94,10 @@ class Floor(Base):
 
         studentList = (
             Student.select()
+            .join(AllocatedRoom)
             .join(Room)
-            .where(Student.allocation == Room.roomNumber)
+            .where(Student.zID == AllocatedRoom.person)
+            .where(AllocatedRoom.room == Room.roomNumber)
             .where(Room.floor == self.floorNumber)
         )
 
@@ -110,7 +120,6 @@ class Room(Base):
     front = BooleanField()
     balc = BooleanField()
     SubDivisionNumber = IntegerField()
-    assigned = BooleanField()
     floor = ForeignKeyField(Floor, backref="rooms")
 
     @classmethod
@@ -124,7 +133,6 @@ class Room(Base):
                 balc=balc,
                 rf=rf,
                 SubDivisionNumber=SubDivisionNumber,
-                assigned=False,
                 floor=floorNum,
             )
 
@@ -139,49 +147,42 @@ class Room(Base):
             return found
         else:
             return False
-
-    # newOccupant as zid
-    def assignRoom(self, newOccupant):
-        self.assigned = True
-        student = Student.get(Student.zID == newOccupant)
-        student.assigned = True
-        student.allocation = self.roomNumber
-        self.save()
-        student.save()
-
-    # oldOccupant as zid
-    def clearAllocation(self):
-        self.assigned = False
-        student = self.occupant.get()
-        student.assigned = False
-        student.allocation = None
-        self.save()
-        student.save()
+    
+    @property
+    def assigned(self):
+        find = self.assignedTo
+        if (find.count() == 0):
+            return False
+        else:
+            return True
+    
+    @property
+    def occupant(self):
+        find = self.assignedTo
+        if (find.count() == 0):
+            return False
+        else:
+            return find.person
 
 
 class Student(Base):
     zID = CharField(primary_key=True)
-    name = CharField()
+    # name = CharField()
     year = IntegerField()
     gender = CharField()
     roomPoints = IntegerField()
-    assigned = BooleanField(null=True)
-    allocation = ForeignKeyField(Room, backref="occupant", null=True)
     password = CharField()
     startTime = DateTimeField(default=datetime.datetime.strptime("2050", "%Y"))
-    otherPreferences = TextField(null=True)
 
     @classmethod
-    def createStudent(cls, zid, name, year, gender, roomPoints, password, startTime):
+    def createStudent(cls, zid, year, gender, roomPoints, password, startTime):
         try:
             newStudent = cls.create(
                 zID=zid,
-                name=name,
+                # name=name,
                 year=year,
                 gender=gender,
                 roomPoints=roomPoints,
-                assigned=None,
-                allocation=None,
                 password=password,
                 startTime=startTime,
             )
@@ -197,15 +198,44 @@ class Student(Base):
             return found
         else:
             return False
+    
+    @property
+    def allocation(self):
+        find = self.allocation
+        if (find.count() == 0):
+            return False
+        else:
+            return find.room
 
-# class Allocation(Base):
-#     timeOfAllocation = DateField(default=datetime.datetime.now())
-#     person = ForeignKeyField(Student, backref="allocation")
-#     room = ForeignKeyField(Room, backref="occupant")
-#     otherPreferences = TextField(null=True)
+    @property
+    def assigned(self):
+        find = self.allocation
+        if (find.count() == 0):
+            return False
+        else:
+            return True
+
+class AllocatedRoom(Base):
+    timeOfAllocation = DateField(default=datetime.datetime.now())
+    person = ForeignKeyField(Student, backref="allocation", unique=True)
+    room = ForeignKeyField(Room, backref="assignedTo", unique=True)
+    otherPreferences = TextField(null=True)
+
+    @classmethod
+    def makeAllocation(cls, zid, roomNumber, otherPreferences):
+        try:
+            newAllocation = cls.create(
+                person = zid,
+                room = roomNumber,
+                otherPreferences = otherPreferences
+            )
+
+            return newAllocation
+        except IntegrityError:
+            raise ValueError("Allocation Already Exists")
 
 def db_reset():
     db.connect()
     # db.drop_tables([Student, Floor, Room])
-    db.create_tables([Student, Floor, Room], safe=True)
+    db.create_tables([Student, Floor, Room, AllocatedRoom], safe=True)
     db.close()
