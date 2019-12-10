@@ -4,7 +4,9 @@
 {% block content %}
 
 <h1>Upload a CSV File</h1>
+<h2>NOTE: Must upload files seperatly</h2>
 <div class="columns is-centered">
+    
     <form
         class="form"
         name="upload"
@@ -12,7 +14,7 @@
         enctype="multipart/form-data"
     >
         <div class="field">
-            <label for="file">File:</label>
+            <label for="file">Rooms File:</label>
 
             <div class="control">
                 <input
@@ -31,6 +33,7 @@
             />
         </div>
     </form>
+    
     <form
         class="form"
         name="upload"
@@ -39,7 +42,7 @@
         enctype="multipart/form-data"
     >
         <div class="field">
-            <label for="file">File:</label>
+            <label for="file">Students File:</label>
 
             <div class="control">
                 <input
