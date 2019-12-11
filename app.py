@@ -6,7 +6,8 @@ from people import (
     getStudentList,
     checkCorrectPassword,
     checkValidTime,
-    checkPersonAllocated
+    checkPersonAllocated,
+    createAccessTimes
 )
 from people import (
     getStudentsByRoomPoints,
@@ -24,6 +25,7 @@ import csv
 import os
 
 db_reset()
+# createAccessTimes("10:30AM 12/11/2019")
 
 app = Flask(__name__)
 
@@ -83,7 +85,7 @@ def upload():
                 return redirect(request.url)
             csv_file = csv.DictReader(StringIO(string))
             import_rooms(csv_file)
-            return ""
+            return redirect("/")
 
 
 @app.route("/upload/people", methods=["POST"])
@@ -104,7 +106,7 @@ def upload_p():
                 return redirect(request.url)
             csv_file = csv.DictReader(StringIO(string))
             import_students(csv_file)
-            return ""
+            return redirect("/")
 
 
 @app.route("/mailer", methods=["GET", "POST"])
@@ -171,7 +173,8 @@ if __name__ == "__main__":
     # send_message()
     if "HEROKU" in os.environ:
         PORT = int(os.environ.get("PORT"))
+        app.run(host="0.0.0.0", port=PORT)
     else:
         PORT = 8888
-    app.run(debug=True, host="0.0.0.0", port=PORT)
+        app.run(debug=True, host="0.0.0.0", port=PORT)
 

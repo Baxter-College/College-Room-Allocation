@@ -75,3 +75,37 @@ def calculatePercentageAllocated():
     total = models.Student.select().count() # pylint: disable=no-value-for-parameter
     assigned = models.Student.select().where(models.Student.assigned == True).count()
     return (assigned/total * 100)
+
+# takes a startTime string in format "10:30AM 12/11/2019"
+def createAccessTimes(startTime):
+    seperationMinutes = 30
+    def addTime(currDate, addMinutes):
+        dayStart = "09:00AM"
+        dayEnd = "10:00PM"
+
+        dayStart = pytz.timezone("Australia/Sydney").localize(datetime.datetime.strptime(dayStart, "%I:%M%p"))
+        dayEnd = pytz.timezone("Australia/Sydney").localize(datetime.datetime.strptime(dayEnd, "%I:%M%p"))
+        newTime = currDate + datetime.timedelta(minutes=addMinutes)
+        
+        if newTime.timetz() >= dayEnd.timetz():
+            currDate += datetime.timedelta(days=1)
+            currDate = currDate.replace(hour=dayStart.hour, minute=dayStart.minute)
+            return currDate
+        else:
+            return newTime
+
+    studentList = models.Student.select().order_by(models.Student.roomPoints.desc())
+    tz = pytz.timezone("Australia/Sydney")
+    newTime = datetime.datetime.strptime(startTime, "%I:%M%p %d/%m/%Y")
+    tz.localize(newTime)
+
+    lastRoomPoints = -1
+    for s in studentList:
+        if (s.roomPoints != lastRoomPoints):
+            lastRoomPoints = s.roomPoints
+            newTime = addTime(newTime, seperationMinutes)
+        s.startTime = newTime
+        s.save()
+    
+    # for s in studentList:
+    #     print(s.zID,s.roomPoints,s.startTime)
