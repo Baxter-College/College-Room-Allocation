@@ -4,7 +4,7 @@ NUMBER_OF_FLOORS = 7
 EQUALISE_SENIOR_INTERFLOOR_NUMBERS = True
 # RULE #2: Balance the genders of a floor
 EQUALISE_ONFLOOR_GENDER_BALANCE = True
-GENDER_BALANCE_PERCENTAGE_LENIENCY = 0.1
+GENDER_BALANCE_PERCENTAGE_LENIENCY = 0.25
 # RULE #3: Equalises the number of males and females in a set of x rooms to try to alternate male and female. Odd numbers only, set to 0 to turn off
 ALTERNATING_GENDERS_ROOM_SEPERATION = 0
 # RULE #4: Maximum number of seniors on shared balcs
@@ -61,14 +61,14 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
                     continue
             
             if EQUALISE_ONFLOOR_SENIOR_GENDER_BALANCE and isSenior:
-                if ((floorSeniorGenderCapacity - seniorGenderCount)/floorSeniorGenderCapacity) < (0.5 - GENDER_BALANCE_PERCENTAGE_LENIENCY):
+                if ((floorSeniorGenderCapacity - seniorGenderCount)/floorSeniorGenderCapacity) <= (0.5 - GENDER_BALANCE_PERCENTAGE_LENIENCY):
                     availableRooms[roomNum]["available"] = False
                     availableRooms[roomNum]["reason"] = "Too many seniors on this floor of your gender. RULE #6"
                     continue
             
             if EQUALISE_ONFLOOR_GENDER_BALANCE:
                 
-                if (totalGenderCount/numOfRooms) > (0.5 + GENDER_BALANCE_PERCENTAGE_LENIENCY):
+                if (totalGenderCount/numOfRooms) >= (0.5 + GENDER_BALANCE_PERCENTAGE_LENIENCY):
                     availableRooms[roomNum]["available"] = False
                     availableRooms[roomNum]["reason"] = "Too many people on this floor of your gender. RULE #2"
                     continue
