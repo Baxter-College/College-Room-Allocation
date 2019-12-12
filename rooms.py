@@ -5,7 +5,6 @@ import math
 def import_rooms(reader):
     for i in range(1,8):
         models.Floor.createFloor(i)
-    rooms = []
     for row in reader:
         roomNumber = int(row["RoomNumber"])
         rf = bool(row["RF"])
@@ -13,17 +12,9 @@ def import_rooms(reader):
         front = bool(row["Front"])
         balc = bool(row["Balc"])
         SubDivisionNumber = int(row["SubDivisionNumber"])
-        rooms.append({"roomNumber":roomNumber,
-                        "bathroom":bathroom,
-                        "front":front,
-                        "balc":balc,
-                        "rf":rf,
-                        "SubDivisionNumber":SubDivisionNumber,
-                        "floor":math.floor(roomNumber / 100)})
-    
-    with models.db.atomic():
-        models.Room.insert_many(rooms).execute() # pylint: disable=no-value-for-parameter
 
+        models.Room.createRoom(roomNumber, bathroom, front, balc, rf, SubDivisionNumber)
+    
     sysInfo = models.SystemInformation.getSysInfo()
     sysInfo.roomListUploaded = True
     sysInfo.save()
