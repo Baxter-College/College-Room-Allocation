@@ -228,14 +228,16 @@ class AllocatedRoom(Base):
     person = ForeignKeyField(Student, backref="allocation", unique=True)
     room = ForeignKeyField(Room, backref="assignedTo", unique=True)
     otherPreferences = TextField(null=True)
+    currentState = TextField()
 
     @classmethod
-    def makeAllocation(cls, zid, roomNumber, otherPreferences):
+    def makeAllocation(cls, zid, roomNumber, otherPreferences, allocationState):
         try:
             newAllocation = cls.create(
                 person = zid,
                 room = roomNumber,
-                otherPreferences = otherPreferences
+                otherPreferences = otherPreferences,
+                currentState = allocationState
             )
 
             return newAllocation

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from flask import Flask, render_template, request, json, jsonify, redirect, url_for
+from flask import Flask, render_template, request, json, jsonify, redirect, url_for, send_file
 from io import StringIO
 from allocation import listAvailableRooms, makeAllocation
 from people import (
@@ -7,7 +7,8 @@ from people import (
     checkCorrectPassword,
     checkValidTime,
     checkPersonAllocated,
-    createAccessTimes
+    createAccessTimes,
+    personAllocatedList
 )
 from people import (
     getStudentsByRoomPoints,
@@ -111,9 +112,15 @@ def upload_p():
 
 @app.route("/mailer", methods=["GET", "POST"])
 def mailer():
-    if request.method == "GET":
-        return render_template("mailer.html", students=getStudentsByRoomPoints())
+    if request.method == "POST":
+       form = request.form
+       date = form['starttime']
+       createAccessTimes(str(date))
+       return redirect(url_for('mailer'))
+       
+        
 
+    return render_template("mailer.html", students=getStudentsByRoomPoints(), allocations=personAllocatedList())
 
 @app.route("/allocated", methods=["GET"])
 def allocated():

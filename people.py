@@ -42,6 +42,13 @@ def checkPersonAllocated(zid):
     
     return {"allocated":False, "room":False}
 
+def personAllocatedList():
+    allocatedList = {}
+    for s in models.Student.select():
+        allocatedList[s.zID] = checkPersonAllocated(s.zID)
+    return allocatedList
+
+
 def checkCorrectPassword(zid, password):
     person = models.Student.findStudent(zid)
     
@@ -69,11 +76,16 @@ def checkValidTime(zid, time):
 
 def getStudentsByRoomPoints():
     studentList = models.Student.select().order_by(models.Student.roomPoints.desc())
-    return [json.dumps(model_to_dict(x)) for x in studentList]
+    sterile = []
+    for x in studentList:
+        modelDict = model_to_dict(x)
+        modelDict["startTime"] = str(modelDict["startTime"])
+        sterile.append(modelDict)
+    return sterile
 
 def calculatePercentageAllocated():
     total = models.Student.select().count() # pylint: disable=no-value-for-parameter
-    assigned = models.Student.select().where(models.Student.assigned == True).count()
+    assigned = models.AllocatedRoom.select().count() # pylint: disable=no-value-for-parameter
     return (assigned/total * 100)
 
 # takes a startTime string in format "10:30AM 12/11/2019"
@@ -96,7 +108,7 @@ def createAccessTimes(startTime):
 
     studentList = models.Student.select().order_by(models.Student.roomPoints.desc())
     tz = pytz.timezone("Australia/Sydney")
-    newTime = datetime.datetime.strptime(startTime, "%I:%M%p %d/%m/%Y")
+    newTime = datetime.datetime.strptime(startTime, "%Y-%m-%dT%H:%M")
     tz.localize(newTime)
 
     lastRoomPoints = -1

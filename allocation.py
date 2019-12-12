@@ -197,6 +197,12 @@ def getDivisionInformation(floorNum, division):
 #             makeAllocation(unassignedMaleFreshers[0], room)
 #             unassignedMaleFreshers.pop(0)
 
+# rturns string of current allocation
+def currentRoomState():
+    state = "Current state of all bookings:\n"
+    for allocation in models.AllocatedRoom.select():
+        state += f"{allocation.room} is allocated to {allocation.person}\n"
+    return state
 
 # Will return True if succsess, False if fail
 # Takes zid and roomnum
@@ -211,7 +217,7 @@ def makeAllocation(zid, newRoomNum, subPreferences):
     if newRoom.assigned == True and newRoom.occupant.first().year > 1:
         return False
     
-    models.AllocatedRoom.makeAllocation(zid, newRoomNum, json.dumps(subPreferences))
+    models.AllocatedRoom.makeAllocation(zid, newRoomNum, json.dumps(subPreferences), currentRoomState())
 
     if ALLOCATE_EXAMPLE_FRESHERS:
         pass

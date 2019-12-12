@@ -21,7 +21,7 @@ block content %}
 
 <div class="columns is-centered">
   <div class="column is-6">
-    <form class="form">
+    <form class="form" method="POST">
       <div class="field">
         <label for="starttime" class="label">Start time</label>
         <div class="control">
@@ -30,7 +30,7 @@ block content %}
       </div>
       <div class="field">
         <div class="control">
-          <button class="button is-success">Begin Room Allocation</button>
+          <button type="submit" class="button is-success">Begin Room Allocation</button>
         </div>
       </div>
     </form>
@@ -43,7 +43,6 @@ block content %}
       class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
     >
       <thead>
-        <th>Student</th>
         <th>zID</th>
         <th>Room Points</th>
         <th>Notification Time</th>
@@ -54,26 +53,33 @@ block content %}
       <tbody>
         {% for s in students %}
         <tr>
-          <td>{{ s["name"] }}</td>
           <td>{{ s["zID"] }}</td>
           <td>{{ s["roomPoints"] }}</td>
           <td>{{ s["startTime"] }}</td>
           {% if s['year'] < 2 %}
-          <td>
-            <span class="tag is-danger">Fresher No Email</span>
-          </td>
-          <td>
-            N/A
-          </td>
+            <td>
+              <span class="tag is-danger">Fresher No Email</span>
+            </td>
+            <td>
+              N/A
+            </td>
           {% else %}
-          <td>
-            <span class="tag is-success">Yes</span>
-          </td>
-          <td>
-            <span class="tag is-warning">No</span>
-          </td>
+            <!-- TODO: update these -->
+            <td>
+              <span class="tag is-success">Yes</span>
+            </td>
+            {% if allocations[s["zID"]]['allocated'] == True %}
+              <td>
+                <span class="tag is-success">Yes</span>
+              </td>
+              <td>{{ allocations[s["zID"]]['room'] }}</td>
+            {% else %}
+              <td>
+                  <span class="tag is-warning">No</span>
+              </td>    
+              <td></td>
+            {% endif %}
           {% endif %}
-          <td>{{ s["assigned"] }}</td>
         </tr>
         {% endfor %}
       </tbody>
