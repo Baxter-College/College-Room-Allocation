@@ -47,7 +47,8 @@ def import_students(reader):
                         "password":password,
                         "startTime":startTime})
     
-    models.Student.insert_many(students).execute() # pylint: disable=no-value-for-parameter
+    with models.db.atomic():
+        models.Student.insert_many(students).execute() # pylint: disable=no-value-for-parameter
 
     sysInfo = models.SystemInformation.getSysInfo()
     sysInfo.studentListUploaded = True

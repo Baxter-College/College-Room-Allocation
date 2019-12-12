@@ -264,5 +264,6 @@ def dbWipe():
 def db_reset():
     db.connect()
     # db.drop_tables([Student, Floor, Room, AllocatedRoom, SystemInformation])
-    db.create_tables([Student, Floor, Room, AllocatedRoom, SystemInformation], safe=True)
+    db.create_tables([Floor])
+    db.create_tables([Student, Room, AllocatedRoom, SystemInformation], safe=True)
     db.close()

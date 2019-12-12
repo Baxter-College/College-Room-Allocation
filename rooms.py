@@ -21,7 +21,8 @@ def import_rooms(reader):
                         "SubDivisionNumber":SubDivisionNumber,
                         "floor":math.floor(roomNumber / 100)})
     
-    models.Room.insert_many(rooms).execute() # pylint: disable=no-value-for-parameter
+    with models.db.atomic():
+        models.Room.insert_many(rooms).execute() # pylint: disable=no-value-for-parameter
 
     sysInfo = models.SystemInformation.getSysInfo()
     sysInfo.roomListUploaded = True
