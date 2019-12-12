@@ -14,6 +14,7 @@ def getStudentList():
     return studentListGender
 
 def import_students(reader):
+    students = []
     for row in reader:
         zid = row["zID"]
         # name = row["StudentName"]
@@ -37,8 +38,17 @@ def import_students(reader):
             startTime = datetime.datetime.strptime(startTime, "%I:%M%p %d/%m/%Y")
             tz.localize(startTime)
 
-        models.Student.createStudent(zid, year, gender, ensuite, room_points, password, startTime)
+        students.append({"zID":zid,
+                        # "name":name,
+                        "year":year,
+                        "gender":gender,
+                        "hasEnsuite":ensuite,
+                        "roomPoints":room_points,
+                        "password":password,
+                        "startTime":startTime})
     
+    models.Student.insert_many(students).execute() # pylint: disable=no-value-for-parameter
+
     sysInfo = models.SystemInformation.getSysInfo()
     sysInfo.studentListUploaded = True
     sysInfo.save()
