@@ -4,7 +4,6 @@ from peewee import *  # pylint: disable=unused-wildcard-import
 import math
 import datetime
 
-from dotenv import load_dotenv
 
 # TODO: add environ variables
 if "HEROKU" in os.environ:
@@ -17,12 +16,14 @@ if "HEROKU" in os.environ:
         port=url.port,
     )
 else:
-    load_dotenv()
+    
     import getpass
     username = getpass.getuser()
     if (username == "twright" or username == "tdcwr"):
         db = SqliteDatabase('test1.db')
     else:
+        from dotenv import load_dotenv
+        load_dotenv()
         db_name = os.environ["DB_NAME"]
         db_user = os.environ["DB_USER"]
         db_pword = os.environ["DB_PASSWORD"]
