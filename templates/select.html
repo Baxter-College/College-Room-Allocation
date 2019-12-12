@@ -194,23 +194,21 @@
               var count = 0;
               for (var room in rooms[floor]) {
                   room_ele = document.getElementById(room);
-                  room_ele.className.replace(" available", "");
-                  room_ele.className.replace(" unavailable", "");
+                  room_ele.className = "";
                   room_ele.children[1].innerHTML = rooms[floor][room]["reason"];
                   if (rooms[floor][room]["available"]) {
                       count++;
-                      room_ele.className += " available";
+                      room_ele.className = "available";
                   } else {
-                      room_ele.className += " unavailable";
+                      room_ele.className = "unavailable";
                   }
               }
               floor = document.getElementById("floor" + floor);
-              floor.className.replace(" available", "");
-              floor.className.replace(" unavailable", "");
+              floor.className = "";
               if (count > 0) {
-                  floor.className += " available";
+                  floor.className = "available";
               } else {
-                  floor.className += " unavailable";
+                  floor.className = "unavailable";
               }
           }
       }

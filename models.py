@@ -4,9 +4,8 @@ from peewee import *  # pylint: disable=unused-wildcard-import
 import math
 import datetime
 
-# from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-# load_dotenv()
 # TODO: add environ variables
 if "HEROKU" in os.environ:
     url = urlparse(os.environ["DATABASE_URL"])
@@ -18,6 +17,7 @@ if "HEROKU" in os.environ:
         port=url.port,
     )
 else:
+    load_dotenv()
     import getpass
     username = getpass.getuser()
     if (username == "twright" or username == "tdcwr"):
@@ -137,8 +137,8 @@ class Room(Base):
             )
 
             return newRoom
-        except IntegrityError:
-            raise ValueError("Room Already Exists")
+        except IntegrityError as e:
+            raise ValueError(f"Room Already Exists {roomNum} : {e}")
 
     @classmethod
     def findRoom(cls, roomNumber):
@@ -256,7 +256,7 @@ class SystemInformation(Base):
         return (cls.get_or_create())[0]
 
 def dbWipe():
-    modelList = [Student, Floor, Room, AllocatedRoom, SystemInformation]
+    modelList = [AllocatedRoom, Student, Room, Floor, SystemInformation]
     for model in modelList:
         for instance in model.select():
             instance.delete_instance()
