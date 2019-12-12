@@ -139,7 +139,9 @@ def getDivisionInformation(floorNum, division):
     numSenior = 0
     numFresh = 0
 
-    for room in models.Room.select().where(models.Room.floor == floorNum).where(models.Room.SubDivisionNumber == division):
+    rooms = models.Room.select().where(models.Room.floor == floorNum).where(models.Room.SubDivisionNumber == division)
+
+    for room in rooms :
         divisionRooms.append(room)
 
         if room.assigned == False:
@@ -154,7 +156,7 @@ def getDivisionInformation(floorNum, division):
             if models.Student.findFromRoom(room).year == 1:
                 numFresh += 1
 
-    numOfRooms = len(divisionRooms)
+    numOfRooms = rooms.count()
 
     return {"numOfRooms":numOfRooms, "numAvailable":numAvailable, "numMale":numMale, "numFemale":numFemale, "numSenior":numSenior, "numFresh":numFresh}
 

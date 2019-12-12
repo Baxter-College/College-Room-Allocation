@@ -144,6 +144,14 @@ def admin():
 def allocated():
     return jsonify({"allocated": calculatePercentageAllocated()})
 
+@app.route("/admin/sendMail", methods=["GET"])
+def sendMail():
+    sysInfo = SystemInformation.getSysInfo()
+    sysInfo.mailOutDone = True
+    sysInfo.save()
+
+    return "MAILOUT SUCCESSFUL"
+
 @app.route("/admin/wipe/db", methods=["GET"])
 def wipeDB():
     password = request.args.get('p')

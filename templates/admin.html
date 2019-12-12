@@ -2,7 +2,7 @@
 block content %}
 
 <div class="columns is-centered">
-  <div class="column is-3">
+  <div class="column is-5">
     <h1 class="title is-3">Room Allocation Admin</h1>
   </div>
 </div>
@@ -37,6 +37,11 @@ block content %}
           {% endif %}
         </div>
       </div>
+      {% if info["mailOutDone"] == False %}
+        <input onclick="window.location.href = '/admin/sendMail'" class="button is-success" value = "Send out mail">
+      {% else %}
+        <input onclick="window.location.href = '/admin/sendMail'" class="button is-danger" value = "Re-Send Mail">
+      {% endif %}
     </form>
   </div>
   <!-- upload files -->
