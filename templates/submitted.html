@@ -1,13 +1,32 @@
-{% if data["valid"] == True %}
-    <p style="text-align: center;"><strong><span style="font-family: Arial, Helvetica, sans-serif; font-size: 30px;">SUCCESS</span></strong></p>
+{% extends "layout.html" %}
+{% block title %}
+  {% if data["valid"] == True %}
+    SUCCESS
+  {% else %}
+    ERROR
+  {% endif %}
+{% endblock %}
+{% block content %}
+  <div class="columns is-centered">
+    <div class="column is-5">
+      <h1 class="title is-3">
+        
+        {% if data["valid"] == True %}
+          Submission SUCCESS
+        {% else %}
+          Submission ERROR
+        {% endif %}
+      </h1>
+    </div>
+  </div>
 
-{% else %}
-    <p style="text-align: center;"><strong><span style="font-family: Arial, Helvetica, sans-serif; font-size: 30px;">ERROR</span></strong></p>
-    <ol>
+  {% if data["valid"] == False %}
+      <ol>
         {% for error in data["errors"] %}
-            <li style="text-align: left;"><strong><span style="font-family: Arial, Helvetica, sans-serif; font-size: 18px;">
-                    {{error}}
-            </span></strong></li>
+          <li style="text-align: left;"><strong><span style="font-family: Arial, Helvetica, sans-serif; font-size: 18px;">
+            {{error}}
+          </span></strong></li>
         {% endfor %}
-    </ol>
-{% endif %}
+      </ol>
+  {% endif %}
+{% endblock %}
