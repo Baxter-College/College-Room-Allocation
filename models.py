@@ -244,8 +244,25 @@ class AllocatedRoom(Base):
         except IntegrityError:
             raise ValueError("Allocation Already Exists")
 
+class SystemInformation(Base):
+    startTimeSet = BooleanField(default=False)
+    mailOutDone =  BooleanField(default=False)
+    roomListUploaded = BooleanField(default=False)
+    studentListUploaded =  BooleanField(default=False)
+    
+
+    @classmethod
+    def getSysInfo(cls):
+        return (cls.get_or_create())[0]
+
+def dbWipe():
+    modelList = [Student, Floor, Room, AllocatedRoom, SystemInformation]
+    for model in modelList:
+        for instance in model.select():
+            instance.delete_instance()
+
 def db_reset():
     db.connect()
-    # db.drop_tables([Student, Floor, Room, AllocatedRoom])
-    db.create_tables([Student, Floor, Room, AllocatedRoom], safe=True)
+    # db.drop_tables([Student, Floor, Room, AllocatedRoom, SystemInformation])
+    db.create_tables([Student, Floor, Room, AllocatedRoom, SystemInformation], safe=True)
     db.close()

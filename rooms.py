@@ -13,6 +13,10 @@ def import_rooms(reader):
         SubDivisionNumber = int(row["SubDivisionNumber"])
 
         models.Room.createRoom(roomNumber, bathroom, front, balc, rf, SubDivisionNumber)
+    
+    sysInfo = models.SystemInformation.getSysInfo()
+    sysInfo.roomListUploaded = True
+    sysInfo.save()
 
 
 # takes safe room, returns string of facts about room

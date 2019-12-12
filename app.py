@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-from flask import Flask, render_template, request, json, jsonify, redirect, url_for, send_file
+from flask import Flask, render_template, request, json, jsonify, redirect, url_for, make_response
 from io import StringIO
-from allocation import listAvailableRooms, makeAllocation
+from allocation import listAvailableRooms, makeAllocation, allocationsToCSV
 from people import (
     getStudentList,
     checkCorrectPassword,
     checkValidTime,
     checkPersonAllocated,
     createAccessTimes,
-    personAllocatedList
+    personAllocatedList,
+    model_to_dict
 )
 from people import (
     getStudentsByRoomPoints,
@@ -21,13 +22,14 @@ import datetime
 import pytz
 import json
 import math
-from models import db_reset
+from models import db_reset, SystemInformation, dbWipe
 import csv
 import os
 
-db_reset()
-# createAccessTimes("10:30AM 12/11/2019")
+ADMIN_PAGE_PASSWORD = "BAXTERROOMS2019!"
+WIPE_DB_PASSWORD = "IUYb_ouiYOU_ypV07!bU"
 
+db_reset()
 app = Flask(__name__)
 
 
@@ -67,9 +69,8 @@ def select_rooms():
         # TODO: major error handler
         pass
 
-
-@app.route("/upload/file", methods=["GET", "POST"])
-def upload():
+@app.route("/upload/rooms", methods=["POST"])
+def upload_rooms():
     if request.method == "GET":
         return render_template("upload.html")
     else:
@@ -86,11 +87,10 @@ def upload():
                 return redirect(request.url)
             csv_file = csv.DictReader(StringIO(string))
             import_rooms(csv_file)
-            return redirect("/")
-
+            return "SUCCESSFULLY UPLOADED ROOMS"
 
 @app.route("/upload/people", methods=["POST"])
-def upload_p():
+def upload_people():
     if request.method == "GET":
         return render_template("upload.html")
     else:
@@ -107,25 +107,47 @@ def upload_p():
                 return redirect(request.url)
             csv_file = csv.DictReader(StringIO(string))
             import_students(csv_file)
-            return redirect("/")
+            return "SUCCESSFULLY UPLOADED PEOPLE"
 
 
-@app.route("/mailer", methods=["GET", "POST"])
-def mailer():
+@app.route("/admin", methods=["GET", "POST"])
+def admin():
+    password = request.args.get('p')
+    if (password != ADMIN_PAGE_PASSWORD):
+        return "ACCESS DENIED"
+
     if request.method == "POST":
-       form = request.form
-       date = form['starttime']
-       createAccessTimes(str(date))
-       return redirect(url_for('mailer'))
-       
-        
+        form = request.form
+        if (form["submit"] == "Begin Room Allocation" or form["submit"] == "Restart Room Allocation" ):
+            date = form['starttime']
+            createAccessTimes(str(date))
+        elif (form["submit"] == "Download File"):
+            si = StringIO()
+            cw = csv.writer(si)
+            cw.writerows(allocationsToCSV())
+            output = make_response(si.getvalue())
+            output.headers["Content-Disposition"] = "attachment; filename=roomAllocations.csv"
+            output.headers["Content-type"] = "text/csv"
+            return output
 
-    return render_template("mailer.html", students=getStudentsByRoomPoints(), allocations=personAllocatedList())
 
-@app.route("/allocated", methods=["GET"])
+    return (render_template("admin.html", 
+                            students=getStudentsByRoomPoints(), 
+                            allocations=personAllocatedList(), 
+                            info=model_to_dict(SystemInformation.getSysInfo()),
+                            dbWipePass=WIPE_DB_PASSWORD))
+
+
+@app.route("/admin/allocated", methods=["GET"])
 def allocated():
     return jsonify({"allocated": calculatePercentageAllocated()})
 
+@app.route("/admin/wipe/db", methods=["GET"])
+def wipeDB():
+    password = request.args.get('p')
+    if (password == WIPE_DB_PASSWORD):
+        dbWipe()
+    return "DATABASE WIPED"
 
 def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
     errors = []
@@ -140,7 +162,6 @@ def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
 
     if not checkCorrectPassword(zid, password):
         errors.append("incorrect password")
-    # TODO: TIME CHECKS
     if not checkValidTime(zid, time):
         errors.append("before valid submit time")
 
@@ -155,7 +176,6 @@ def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
         roomList = listAvailableRooms(
             (math.floor(roomNum / 100)), getStudentList()[zid], True
         )
-        print(roomNum, roomList)
         if not roomList[firstPreference]["available"]:
             errors.append("cannot allocate room due to rule")
 
@@ -184,4 +204,3 @@ if __name__ == "__main__":
     else:
         PORT = 8888
         app.run(debug=True, host="0.0.0.0", port=PORT)
-

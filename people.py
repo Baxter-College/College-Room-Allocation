@@ -32,6 +32,10 @@ def import_students(reader):
             tz.localize(startTime)
 
         models.Student.createStudent(zid, year, gender, room_points, password, startTime)
+    
+    sysInfo = models.SystemInformation.getSysInfo()
+    sysInfo.studentListUploaded = True
+    sysInfo.save()
 
 def checkPersonAllocated(zid):
     person = models.Student.findStudent(zid)
@@ -86,6 +90,8 @@ def getStudentsByRoomPoints():
 def calculatePercentageAllocated():
     total = models.Student.select().count() # pylint: disable=no-value-for-parameter
     assigned = models.AllocatedRoom.select().count() # pylint: disable=no-value-for-parameter
+    if (total == 0):
+        return 0
     return (assigned/total * 100)
 
 # takes a startTime string in format "10:30AM 12/11/2019"
@@ -111,7 +117,7 @@ def createAccessTimes(startTime):
     newTime = datetime.datetime.strptime(startTime, "%Y-%m-%dT%H:%M")
     tz.localize(newTime)
 
-    lastRoomPoints = -1
+    lastRoomPoints = studentList.get().roomPoints
     for s in studentList:
         if (s.roomPoints != lastRoomPoints):
             lastRoomPoints = s.roomPoints
@@ -119,5 +125,9 @@ def createAccessTimes(startTime):
         s.startTime = newTime
         s.save()
     
+    sysInfo = models.SystemInformation.getSysInfo()
+    sysInfo.startTimeSet = True
+    sysInfo.save()
+
     # for s in studentList:
     #     print(s.zID,s.roomPoints,s.startTime)
