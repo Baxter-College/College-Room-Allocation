@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from flask import Flask, render_template, request, json, jsonify, redirect, url_for, make_response
+from flask import Flask, render_template, request, json, jsonify, redirect, url_for, make_response, after_this_request
 from io import StringIO
 from allocation import listAvailableRooms, makeAllocation, allocationsToCSV
 from people import (
@@ -28,6 +28,7 @@ import os
 
 ADMIN_PAGE_PASSWORD = "BAXTERROOMS2019!"
 WIPE_DB_PASSWORD = "IUYb_ouiYOU_ypV07!bU"
+allData = ''
 
 db_reset()
 app = Flask(__name__)
@@ -38,7 +39,8 @@ def select_rooms():
 
     if request.method == "GET":
         # start = datetime.datetime.now()
-        data = get_data()
+        global allData
+        data = allData
         # print("--------------------TIMEDIFF:",datetime.datetime.now().microsecond - start.microsecond,"--------------------")
         return render_template("select.html", data=data)
 
@@ -58,6 +60,10 @@ def select_rooms():
             checker = checkValidRoomRequest(zid, password, firstPref, subPref)
             if checker["valid"]:
                 makeAllocation(zid, int(firstPref), subPref)
+                @after_this_request
+                def refreshData(response):
+                    updateData()
+                    return response
             return render_template("submitted.html", data=checker)
     else:
         # TODO: major error handler
@@ -108,6 +114,11 @@ def upload_rooms():
                 return redirect(request.url)
             csv_file = csv.DictReader(StringIO(string))
             import_rooms(csv_file)
+
+            @after_this_request
+            def refreshData(response):
+                updateData()
+                return response
             return "SUCCESSFULLY UPLOADED ROOMS"
 
 @app.route("/admin/upload/people", methods=["POST"])
@@ -152,7 +163,6 @@ def wipeDB():
     return "DATABASE WIPED"
 
 
-
 def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
     errors = []
     time = datetime.datetime.now()
@@ -185,8 +195,7 @@ def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
 
     return {"valid": (len(errors) == 0), "errors": errors}
 
-
-def get_data():
+def updateData():
     studentList = getStudentList()
     maleList = {}
     femaleList = {}
@@ -195,9 +204,10 @@ def get_data():
         maleList[str(floorNum)] = listAvailableRooms(floorNum, "m", True)
         femaleList[str(floorNum)] = listAvailableRooms(floorNum, "f", True)
 
+    global allData
     allData = {"ZIDS": studentList, "MALE": maleList, "FEMALE": femaleList}
 
-    return allData
+updateData()
 
 
 if __name__ == "__main__":
