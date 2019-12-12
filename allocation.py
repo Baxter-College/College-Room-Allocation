@@ -40,7 +40,7 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
     floorSeniorGenderCapacity = seniorCapacity(floorNum, gender)
     floorSeniorCount = floor.numOfSeniors
     totalGenderCount = floor.numOfGender()[gender]
-    for room in floor.rooms.select():
+    for room in floor.rooms.select().iterator():
         #cur = dt.now()
         roomNum = room.roomNumber
         roomFacts = getRoomFacts(roomNum)
@@ -132,7 +132,7 @@ def getDivisionInformation(floorNum, division):
 
     rooms = models.Room.select().where(models.Room.floor == floorNum).where(models.Room.SubDivisionNumber == division)
 
-    for room in rooms :
+    for room in rooms.iterator():
         divisionRooms.append(room)
 
         if room.assigned == False:
@@ -154,7 +154,7 @@ def getDivisionInformation(floorNum, division):
 # rturns string of current allocation
 def currentRoomState():
     state = "Current state of all bookings:\n"
-    for allocation in models.AllocatedRoom.select():
+    for allocation in models.AllocatedRoom.select().iterator():
         state += f"{allocation.room} is allocated to {allocation.person}\n"
     return state
 

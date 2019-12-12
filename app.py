@@ -140,6 +140,11 @@ def upload_people():
                 return redirect(request.url)
             csv_file = csv.DictReader(StringIO(string))
             import_students(csv_file)
+
+            @after_this_request
+            def refreshData(response):
+                updateData()
+                return response
             return "SUCCESSFULLY UPLOADED PEOPLE"
 
 @app.route("/admin/allocated", methods=["GET"])

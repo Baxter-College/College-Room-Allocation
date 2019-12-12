@@ -100,7 +100,7 @@ class Floor(Base):
             .where(Room.floor == self.floorNumber)
         )
 
-        for student in studentList:
+        for student in studentList.iterator():
             if isSenior and student.year == 1:
                 continue
 

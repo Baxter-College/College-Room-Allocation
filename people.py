@@ -8,7 +8,7 @@ def getStudentList():
     studentListGender = {}
     studentList = models.Student.select().where(models.Student.year > 1)
     
-    for student in studentList:
+    for student in studentList.iterator():
         studentListGender[student.zID] = student.gender
     
     return studentListGender
@@ -54,7 +54,7 @@ def checkPersonAllocated(zid):
 
 def personAllocatedList():
     allocatedList = {}
-    for s in models.Student.select():
+    for s in models.Student.select().iterator():
         allocatedList[s.zID] = checkPersonAllocated(s.zID)
     return allocatedList
 
@@ -97,7 +97,7 @@ def checkValidRoomType(zid, roomNum):
 def getStudentsByRoomPoints():
     studentList = models.Student.select().order_by(models.Student.roomPoints.desc())
     sterile = []
-    for x in studentList:
+    for x in studentList.iterator():
         modelDict = model_to_dict(x)
         modelDict["startTime"] = str(modelDict["startTime"])
         sterile.append(modelDict)
@@ -134,7 +134,7 @@ def createAccessTimes(startTime):
     tz.localize(newTime)
 
     lastRoomPoints = studentList.get().roomPoints
-    for s in studentList:
+    for s in studentList.iterator():
         if (s.roomPoints != lastRoomPoints):
             lastRoomPoints = s.roomPoints
             newTime = addTime(newTime, seperationMinutes)
