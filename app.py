@@ -8,6 +8,7 @@ from people import (
     checkValidTime,
     checkPersonAllocated,
     createAccessTimes,
+    checkValidRoomType,
     personAllocatedList,
     model_to_dict
 )
@@ -177,21 +178,24 @@ def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
     if not checkCorrectPassword(zid, password):
         errors.append("incorrect password")
     if not checkValidTime(zid, time):
-        errors.append("before valid submit time")
+        errors.append("You tried to submit before your submit time")
 
     validRoom = roomOccupied(firstPreference)
     if validRoom["occupied"]:
         if validRoom["found"]:
-            errors.append("room is occupied")
+            errors.append("Room is occupied")
         else:
-            errors.append("room not found or invalid room number")
+            errors.append("Room number not found or invalid room number")
     else:
         roomNum = int(firstPreference)
         roomList = listAvailableRooms(
             (math.floor(roomNum / 100)), getStudentList()[zid], True
         )
         if not roomList[firstPreference]["available"]:
-            errors.append("cannot allocate room due to rule")
+            errors.append("Cannot allocate room due to rule")
+
+        if not checkValidRoomType(zid, roomNum):
+            errors.append("Cannot allocate due to your room preferences (Ensuite/Standard Room)")
 
     return {"valid": (len(errors) == 0), "errors": errors}
 

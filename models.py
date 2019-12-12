@@ -169,18 +169,20 @@ class Student(Base):
     # name = CharField()
     year = IntegerField()
     gender = CharField()
+    hasEnsuite = BooleanField(default=False)
     roomPoints = IntegerField()
     password = CharField()
     startTime = DateTimeField(default=datetime.datetime.strptime("2050", "%Y"))
 
     @classmethod
-    def createStudent(cls, zid, year, gender, roomPoints, password, startTime):
+    def createStudent(cls, zid, year, gender, ensuite, roomPoints, password, startTime):
         try:
             newStudent = cls.create(
                 zID=zid,
                 # name=name,
                 year=year,
                 gender=gender,
+                hasEnsuite=ensuite,
                 roomPoints=roomPoints,
                 password=password,
                 startTime=startTime,

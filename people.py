@@ -22,6 +22,12 @@ def import_students(reader):
         gender = row["gender"]
         password = row["password"]
         startTime = row["startTime"]
+        ensuite = row["roomType"]
+
+        if (ensuite == "ensuite"):
+            ensuite = True
+        else:
+            ensuite = False
 
         if startTime == "":
             startTime = datetime.datetime.strptime("2050", "%Y")
@@ -31,7 +37,7 @@ def import_students(reader):
             startTime = datetime.datetime.strptime(startTime, "%I:%M%p %d/%m/%Y")
             tz.localize(startTime)
 
-        models.Student.createStudent(zid, year, gender, room_points, password, startTime)
+        models.Student.createStudent(zid, year, gender, ensuite, room_points, password, startTime)
     
     sysInfo = models.SystemInformation.getSysInfo()
     sysInfo.studentListUploaded = True
@@ -56,7 +62,7 @@ def personAllocatedList():
 def checkCorrectPassword(zid, password):
     person = models.Student.findStudent(zid)
     
-    if (person != None):
+    if (person != False):
         if (person.password == password):
             return True
 
@@ -66,7 +72,7 @@ def checkCorrectPassword(zid, password):
 def checkValidTime(zid, time):
     person = models.Student.findStudent(zid)
 
-    if (person != None):
+    if (person != False):
         # # in format "10:30AM 12/11/2019"
         # tz = pytz.timezone('Australia/Sydney')
         # startTime = datetime.datetime.strptime(startTime,"%I:%M%p %d/%m/%Y")
@@ -75,6 +81,16 @@ def checkValidTime(zid, time):
             return True
 
             
+    return False
+
+def checkValidRoomType(zid, roomNum):
+    person = models.Student.findStudent(zid)
+    room = models.Room.findRoom(roomNum)
+
+    if (person != False and room != False):
+        if (person.hasEnsuite == room.bathroom):
+            return True
+    
     return False
 
 
