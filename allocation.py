@@ -5,8 +5,8 @@ EQUALISE_SENIOR_INTERFLOOR_NUMBERS = True
 # RULE #2: Balance the genders of a floor
 EQUALISE_ONFLOOR_GENDER_BALANCE = True
 GENDER_BALANCE_PERCENTAGE_LENIENCY = 0.25
-# RULE #3: Equalises the number of males and females in a set of x rooms to try to alternate male and female. Odd numbers only, set to 0 to turn off
-ALTERNATING_GENDERS_ROOM_SEPERATION = 0
+# RULE #3: At lease 1 of each gender in each sub-division
+ALTERNATING_GENDERS_ROOM_SEPERATION = True
 # RULE #4: Maximum number of seniors on shared balcs
 NUMBER_OF_SENIORS_FRONT_BALC = 2
 # RULE #5: Keep the number of males and females on a front balc equal
@@ -59,16 +59,16 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
                     availableRooms[roomNum]["available"] = False
                     availableRooms[roomNum]["reason"] = "Too many seniors on this floor. RULE #1"
                     continue
-            
+
             if EQUALISE_ONFLOOR_SENIOR_GENDER_BALANCE and isSenior:
-                if ((floorSeniorGenderCapacity - seniorGenderCount)/floorSeniorGenderCapacity) <= (0.5 - GENDER_BALANCE_PERCENTAGE_LENIENCY):
+                if ((floorSeniorGenderCapacity - seniorGenderCount)/floorSeniorGenderCapacity) < (0.5 - GENDER_BALANCE_PERCENTAGE_LENIENCY):
                     availableRooms[roomNum]["available"] = False
                     availableRooms[roomNum]["reason"] = "Too many seniors on this floor of your gender. RULE #6"
                     continue
             
             if EQUALISE_ONFLOOR_GENDER_BALANCE:
                 
-                if (totalGenderCount/numOfRooms) >= (0.5 + GENDER_BALANCE_PERCENTAGE_LENIENCY):
+                if (totalGenderCount/numOfRooms) > (0.5 + GENDER_BALANCE_PERCENTAGE_LENIENCY):
                     availableRooms[roomNum]["available"] = False
                     availableRooms[roomNum]["reason"] = "Too many people on this floor of your gender. RULE #2"
                     continue
@@ -94,7 +94,7 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
             
             else:
                 if ALTERNATING_GENDERS_ROOM_SEPERATION:
-                    if (divInfo["numOfRooms"] - currGenderCount)/divInfo["numOfRooms"] <= 0.5:
+                    if ((divInfo["numOfRooms"] - currGenderCount)/divInfo["numOfRooms"] <= 0.5):
                         availableRooms[roomNum]["available"] = False
                         availableRooms[roomNum]["reason"] = "Too many people in this sub-divison. RULE #3"
                         continue
