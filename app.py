@@ -27,8 +27,14 @@ from models import db_reset, SystemInformation, dbWipe
 import csv
 import os
 
-ADMIN_PAGE_PASSWORD = "BAXTERROOMS2019!"
-WIPE_DB_PASSWORD = "IUYb_ouiYOU_ypV07!bU"
+
+if "HEROKU" in os.environ:
+    ADMIN_PAGE_PASSWORD = os.environ["ADMIN_PAGE_PASSWORD"]
+    WIPE_DB_PASSWORD = os.environ["WIPE_DB_PASSWORD"]
+else:
+    ADMIN_PAGE_PASSWORD = "BAXTERROOMS2019!"
+    WIPE_DB_PASSWORD = "IUYb_ouiYOU_ypV07!bU"
+
 allData = ''
 
 db_reset()
