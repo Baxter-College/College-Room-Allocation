@@ -33,14 +33,6 @@ db_reset()
 app = Flask(__name__)
 
 
-@app.before_request
-def before_request():
-    # TODO: everythin that needs to be done before a request
-    # re-load from db/csv
-    # fill freshers
-    pass
-
-
 @app.route("/", methods=["GET", "POST"])
 def select_rooms():
 
@@ -71,47 +63,6 @@ def select_rooms():
         # TODO: major error handler
         pass
 
-@app.route("/upload/rooms", methods=["POST"])
-def upload_rooms():
-    if request.method == "GET":
-        return render_template("upload.html")
-    else:
-        if "file" not in request.files:
-            print("no file")
-            return redirect(url_for("/upload/file"))
-        else:
-            file = request.files["file"]
-            # file = open("smth")
-            string = file.read().decode("utf-8")  #
-
-            # file = TextIOWrapper(file, encoding='utf-8')
-            if file.filename == "":
-                return redirect(request.url)
-            csv_file = csv.DictReader(StringIO(string))
-            import_rooms(csv_file)
-            return "SUCCESSFULLY UPLOADED ROOMS"
-
-@app.route("/upload/people", methods=["POST"])
-def upload_people():
-    if request.method == "GET":
-        return render_template("upload.html")
-    else:
-        if "file" not in request.files:
-            print("no file")
-            return redirect(url_for("/upload/file"))
-        else:
-            file = request.files["file"]
-            # file = open("smth")
-            string = file.read().decode("utf-8")  #
-
-            # file = TextIOWrapper(file, encoding='utf-8')
-            if file.filename == "":
-                return redirect(request.url)
-            csv_file = csv.DictReader(StringIO(string))
-            import_students(csv_file)
-            return "SUCCESSFULLY UPLOADED PEOPLE"
-
-
 @app.route("/admin", methods=["GET", "POST"])
 def admin():
     password = request.args.get('p')
@@ -139,6 +90,45 @@ def admin():
                             info=model_to_dict(SystemInformation.getSysInfo()),
                             dbWipePass=WIPE_DB_PASSWORD))
 
+@app.route("/admin/upload/rooms", methods=["POST"])
+def upload_rooms():
+    if request.method == "GET":
+        return render_template("upload.html")
+    else:
+        if "file" not in request.files:
+            print("no file")
+            return redirect(url_for("/upload/file"))
+        else:
+            file = request.files["file"]
+            # file = open("smth")
+            string = file.read().decode("utf-8")  #
+
+            # file = TextIOWrapper(file, encoding='utf-8')
+            if file.filename == "":
+                return redirect(request.url)
+            csv_file = csv.DictReader(StringIO(string))
+            import_rooms(csv_file)
+            return "SUCCESSFULLY UPLOADED ROOMS"
+
+@app.route("/admin/upload/people", methods=["POST"])
+def upload_people():
+    if request.method == "GET":
+        return render_template("upload.html")
+    else:
+        if "file" not in request.files:
+            print("no file")
+            return redirect(url_for("/upload/file"))
+        else:
+            file = request.files["file"]
+            # file = open("smth")
+            string = file.read().decode("utf-8")  #
+
+            # file = TextIOWrapper(file, encoding='utf-8')
+            if file.filename == "":
+                return redirect(request.url)
+            csv_file = csv.DictReader(StringIO(string))
+            import_students(csv_file)
+            return "SUCCESSFULLY UPLOADED PEOPLE"
 
 @app.route("/admin/allocated", methods=["GET"])
 def allocated():
@@ -150,6 +140,8 @@ def sendMail():
     sysInfo.mailOutDone = True
     sysInfo.save()
 
+    # TODO: PUT SEND EMAIL HERE
+
     return "MAILOUT SUCCESSFUL"
 
 @app.route("/admin/wipe/db", methods=["GET"])
@@ -158,6 +150,8 @@ def wipeDB():
     if (password == WIPE_DB_PASSWORD):
         dbWipe()
     return "DATABASE WIPED"
+
+
 
 def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
     errors = []

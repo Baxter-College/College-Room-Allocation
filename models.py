@@ -4,8 +4,6 @@ from peewee import *  # pylint: disable=unused-wildcard-import
 import math
 import datetime
 
-
-# TODO: add environ variables
 if "HEROKU" in os.environ:
     url = urlparse(os.environ["DATABASE_URL"])
     db = PostgresqlDatabase(
