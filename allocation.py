@@ -114,20 +114,9 @@ def seniorCapacity(floorNum, gender=None):
     else:
         numOfSeniors = models.Student.select().where(models.Student.year > 1).count()
 
-    overflow = numOfSeniors % 7
-    if overflow != 0:
-        
-        # Distribute seniors to higher floors if there is not an even number
-        if (overflow + floorNum) > 7:
-            maxNumOfSeniors = math.floor(numOfSeniors/7)+1
-        else:
-            maxNumOfSeniors = math.floor(numOfSeniors/7)
-    else:
-        maxNumOfSeniors = numOfSeniors/7
+    overflow = 7 - numOfSeniors % 7
+    maxNumOfSeniors = numOfSeniors + overflow
     
-    # self.numOfSeniors-maxNumOfSeniors
-    if maxNumOfSeniors == 0:
-        return 1
     return maxNumOfSeniors
 
 def getDivisionInformation(floorNum, division):
