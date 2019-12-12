@@ -258,8 +258,7 @@ class SystemInformation(Base):
 def dbWipe():
     modelList = [Student, Floor, Room, AllocatedRoom, SystemInformation]
     for model in modelList:
-        for instance in model.select():
-            instance.delete_instance()
+        model.delete().execute() # pylint: disable=no-value-for-parameter
 
 def db_reset():
     db.connect()
