@@ -34,6 +34,7 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
 
     print(f"starting floor {floorNum} at {dt.now()}")
     floorSeniorCapacity = seniorCapacity(floorNum)
+    # minus 1 to ignore RF room
     numOfRooms = floor.rooms.count() - 1
     seniorGenderCount = floor.numOfGender(isSenior=True)[gender]
     floorSeniorGenderCapacity = seniorCapacity(floorNum, gender)
@@ -51,20 +52,14 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
                 availableRooms[room.roomNumber]["available"] = False
                 availableRooms[room.roomNumber]["reason"] = "RF room"
                 continue
-
-            
-            # minus 1 to ignore RF room
-            
-            if EQUALISE_SENIOR_INTERFLOOR_NUMBERS and isSenior:
-                
+              
+            if EQUALISE_SENIOR_INTERFLOOR_NUMBERS and isSenior:        
                 if floorSeniorCount > floorSeniorCapacity:
                     availableRooms[room.roomNumber]["available"] = False
                     availableRooms[room.roomNumber]["reason"] = "Too many seniors on this floor. RULE #1"
                     continue
             
             if EQUALISE_ONFLOOR_SENIOR_GENDER_BALANCE and isSenior:
-                
-                
                 if ((floorSeniorGenderCapacity - seniorGenderCount)/floorSeniorGenderCapacity) < (0.5 - GENDER_BALANCE_PERCENTAGE_LENIENCY):
                     availableRooms[room.roomNumber]["available"] = False
                     availableRooms[room.roomNumber]["reason"] = "Too many seniors on this floor of your gender. RULE #6"

@@ -22,7 +22,7 @@ else:
     if (username == "twright" or username == "tdcwr"):
         db = SqliteDatabase('test1.db')
     else:
-        from dotenv import load_dotenv
+        from dotenv import load_dotenv # pylint: disable=import-error
         load_dotenv()
         db_name = os.environ["DB_NAME"]
         db_user = os.environ["DB_USER"]
