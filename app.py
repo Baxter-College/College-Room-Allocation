@@ -45,7 +45,9 @@ def before_request():
 def select_rooms():
 
     if request.method == "GET":
+        # start = datetime.datetime.now()
         data = get_data()
+        # print("--------------------TIMEDIFF:",datetime.datetime.now().microsecond - start.microsecond,"--------------------")
         return render_template("select.html", data=data)
 
     elif request.method == "POST":

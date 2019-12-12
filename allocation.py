@@ -32,79 +32,67 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
     availableRooms = {}
 
     for room in floor.rooms.select():
+        roomFacts = getRoomFacts(room.roomNumber)
         if (room.assigned):
-            availableRooms[room.roomNumber] = {"available":False, "reason":"Occupied", "roomFacts":getRoomFacts(room.roomNumber)}
+            availableRooms[room.roomNumber] = {"available":False, "reason":"Occupied", "roomFacts":roomFacts}
         else:
-            availableRooms[room.roomNumber] = {"available":True, "reason":"OK", "roomFacts":getRoomFacts(room.roomNumber)}
-    
-    floorSeniorCapacity = seniorCapacity(floorNum)
-    
-    # minus 1 to ignore RF room
-    numOfRooms = floor.rooms.count() - 1
+            availableRooms[room.roomNumber] = {"available":True, "reason":"OK", "roomFacts":roomFacts}
 
-    if EQUALISE_SENIOR_INTERFLOOR_NUMBERS and isSenior:
-        floorSeniorCount = floor.numOfSeniors
-        if floorSeniorCount > floorSeniorCapacity:
-            for room in availableRooms:
-                if (availableRooms[room]["available"]):
-                    availableRooms[room] = {"available":False, "reason":"Too many seniors on this floor. RULE #1", "roomFacts":getRoomFacts(room)}
-            return availableRooms
-    
-    if EQUALISE_ONFLOOR_SENIOR_GENDER_BALANCE and isSenior:
-        
-        genderCount = floor.numOfGender(isSenior=True)[gender]
-        floorSeniorGenderCapacity = seniorCapacity(floorNum, gender)
-
-        if ((floorSeniorGenderCapacity - genderCount)/floorSeniorGenderCapacity) < (0.5 - GENDER_BALANCE_PERCENTAGE_LENIENCY):
-            for room in availableRooms:
-                if (availableRooms[room]["available"]):
-                    availableRooms[room] = {"available":False, "reason":"Too many seniors on this floor of your gender. RULE #2", "roomFacts":getRoomFacts(room)}
-            return availableRooms
-
-    if EQUALISE_ONFLOOR_GENDER_BALANCE:
-        genderCount = floor.numOfGender()[gender]
-        
-        
-        if (genderCount/numOfRooms) > (0.5 + GENDER_BALANCE_PERCENTAGE_LENIENCY):
-            for room in availableRooms:
-                if (availableRooms[room]["available"]):
-                    availableRooms[room] = {"available":False, "reason":"Too many people on this floor of your gender. RULE #3", "roomFacts":getRoomFacts(room)}
-            return availableRooms
-
-    allocatedList = models.Room.select().join(models.AllocatedRoom).where(room == models.Room.roomNumber)
-    roomList = (models.Room.select()
-               .where(models.Room.floor == floorNum)
-               .where(models.Room.roomNumber.not_in(allocatedList)))
-
-    for room in roomList:
-        if room.rf == True:
-            availableRooms[room] = {"available":False, "reason":"RF room", "roomFacts":getRoomFacts(room)}
-            continue
-        
-        divInfo = getDivisionInformation(floorNum, room.SubDivisionNumber)
-        currGenderCount = 0
-        if gender == 'm':
-            currGenderCount = divInfo["numMale"]
-        elif gender == 'f':
-            currGenderCount = divInfo["numFemale"]
-
-        if room.front and room.balc:
-            
-            if NUMBER_OF_SENIORS_FRONT_BALC <= divInfo["numSenior"] and isSenior:
-                availableRooms[room] = {"available":False, "reason":"Too many seniors on this balc. RULE #4", "roomFacts":getRoomFacts(room)}
+            if room.rf == True:
+                availableRooms[room.roomNumber]["available"] = False
+                availableRooms[room.roomNumber]["reason"] = "RF room"
                 continue
-            
-            if EQUALISE_ONBALC_GENDER_BALANCE:
-                if (divInfo["numOfRooms"] - currGenderCount)/divInfo["numOfRooms"] <= 0.5:
-                    availableRooms[room] = {"available":False, "reason":"Too many people on this balc with your gender. RULE #5", "roomFacts":getRoomFacts(room)}
+
+            floorSeniorCapacity = seniorCapacity(floorNum)
+            # minus 1 to ignore RF room
+            numOfRooms = floor.rooms.count() - 1
+            if EQUALISE_SENIOR_INTERFLOOR_NUMBERS and isSenior:
+                floorSeniorCount = floor.numOfSeniors
+                if floorSeniorCount > floorSeniorCapacity:
+                    availableRooms[room.roomNumber]["available"] = False
+                    availableRooms[room.roomNumber]["reason"] = "Too many seniors on this floor. RULE #1"
                     continue
             
-            
-        else:
-            if ALTERNATING_GENDERS_ROOM_SEPERATION:
-                if (divInfo["numOfRooms"] - currGenderCount)/divInfo["numOfRooms"] <= 0.5:
-                    availableRooms[room] = {"available":False, "reason":"Too many people in this sub-divison. RULE #3", "roomFacts":getRoomFacts(room)}
+            if EQUALISE_ONFLOOR_SENIOR_GENDER_BALANCE and isSenior:
+                seniorGenderCount = floor.numOfGender(isSenior=True)[gender]
+                floorSeniorGenderCapacity = seniorCapacity(floorNum, gender)
+                if ((floorSeniorGenderCapacity - seniorGenderCount)/floorSeniorGenderCapacity) < (0.5 - GENDER_BALANCE_PERCENTAGE_LENIENCY):
+                    availableRooms[room.roomNumber]["available"] = False
+                    availableRooms[room.roomNumber]["reason"] = "Too many seniors on this floor of your gender. RULE #6"
                     continue
+            
+            if EQUALISE_ONFLOOR_GENDER_BALANCE:
+                totalGenderCount = floor.numOfGender()[gender]
+                if (totalGenderCount/numOfRooms) > (0.5 + GENDER_BALANCE_PERCENTAGE_LENIENCY):
+                    availableRooms[room.roomNumber]["available"] = False
+                    availableRooms[room.roomNumber]["reason"] = "Too many people on this floor of your gender. RULE #2"
+                    continue
+
+            divInfo = getDivisionInformation(floorNum, room.SubDivisionNumber)
+            currGenderCount = 0
+            if gender == 'm':
+                currGenderCount = divInfo["numMale"]
+            elif gender == 'f':
+                currGenderCount = divInfo["numFemale"]
+
+            if room.front and room.balc:
+                if NUMBER_OF_SENIORS_FRONT_BALC <= divInfo["numSenior"] and isSenior:
+                    availableRooms[room.roomNumber]["available"] = False
+                    availableRooms[room.roomNumber]["reason"] = "Too many seniors on this balc. RULE #4"
+                    continue
+                
+                if EQUALISE_ONBALC_GENDER_BALANCE:
+                    if (divInfo["numOfRooms"] - currGenderCount)/divInfo["numOfRooms"] <= 0.5:
+                        availableRooms[room.roomNumber]["available"] = False
+                        availableRooms[room.roomNumber]["reason"] = "Too many people on this balc with your gender. RULE #5"
+                        continue
+            
+            else:
+                if ALTERNATING_GENDERS_ROOM_SEPERATION:
+                    if (divInfo["numOfRooms"] - currGenderCount)/divInfo["numOfRooms"] <= 0.5:
+                        availableRooms[room.roomNumber]["available"] = False
+                        availableRooms[room.roomNumber]["reason"] = "Too many people in this sub-divison. RULE #3"
+                        continue
                 
                 
     outp = {}
