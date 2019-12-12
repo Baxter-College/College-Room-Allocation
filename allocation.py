@@ -22,6 +22,7 @@ import models
 import math
 import json
 
+from datetime import datetime as dt
 
 
 # floorNum is 1 indexed floor
@@ -31,7 +32,15 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
         return {}
     availableRooms = {}
 
+    print(f"starting floor {floorNum} at {dt.now()}")
+    floorSeniorCapacity = seniorCapacity(floorNum)
+    numOfRooms = floor.rooms.count() - 1
+    seniorGenderCount = floor.numOfGender(isSenior=True)[gender]
+    floorSeniorGenderCapacity = seniorCapacity(floorNum, gender)
+    floorSeniorCount = floor.numOfSeniors
+    totalGenderCount = floor.numOfGender()[gender]
     for room in floor.rooms.select():
+        #cur = dt.now()
         roomFacts = getRoomFacts(room.roomNumber)
         if (room.assigned):
             availableRooms[room.roomNumber] = {"available":False, "reason":"Occupied", "roomFacts":roomFacts}
@@ -43,26 +52,26 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
                 availableRooms[room.roomNumber]["reason"] = "RF room"
                 continue
 
-            floorSeniorCapacity = seniorCapacity(floorNum)
+            
             # minus 1 to ignore RF room
-            numOfRooms = floor.rooms.count() - 1
+            
             if EQUALISE_SENIOR_INTERFLOOR_NUMBERS and isSenior:
-                floorSeniorCount = floor.numOfSeniors
+                
                 if floorSeniorCount > floorSeniorCapacity:
                     availableRooms[room.roomNumber]["available"] = False
                     availableRooms[room.roomNumber]["reason"] = "Too many seniors on this floor. RULE #1"
                     continue
             
             if EQUALISE_ONFLOOR_SENIOR_GENDER_BALANCE and isSenior:
-                seniorGenderCount = floor.numOfGender(isSenior=True)[gender]
-                floorSeniorGenderCapacity = seniorCapacity(floorNum, gender)
+                
+                
                 if ((floorSeniorGenderCapacity - seniorGenderCount)/floorSeniorGenderCapacity) < (0.5 - GENDER_BALANCE_PERCENTAGE_LENIENCY):
                     availableRooms[room.roomNumber]["available"] = False
                     availableRooms[room.roomNumber]["reason"] = "Too many seniors on this floor of your gender. RULE #6"
                     continue
             
             if EQUALISE_ONFLOOR_GENDER_BALANCE:
-                totalGenderCount = floor.numOfGender()[gender]
+                
                 if (totalGenderCount/numOfRooms) > (0.5 + GENDER_BALANCE_PERCENTAGE_LENIENCY):
                     availableRooms[room.roomNumber]["available"] = False
                     availableRooms[room.roomNumber]["reason"] = "Too many people on this floor of your gender. RULE #2"
@@ -93,6 +102,7 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
                         availableRooms[room.roomNumber]["available"] = False
                         availableRooms[room.roomNumber]["reason"] = "Too many people in this sub-divison. RULE #3"
                         continue
+        #print(f"room {room.roomNumber} took {dt.now() - cur} time")
                 
                 
     outp = {}
