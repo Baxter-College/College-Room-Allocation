@@ -178,6 +178,12 @@ def wipeDB():
     password = request.args.get('p')
     if (password == WIPE_DB_PASSWORD):
         dbWipe()
+
+    @after_this_request
+    def refreshData(response):
+        basicImportRoom()
+        updateData()
+        return response
     return "DATABASE WIPED"
 
 
