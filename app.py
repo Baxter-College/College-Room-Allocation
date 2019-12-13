@@ -89,7 +89,7 @@ def admin():
         if (form["submit"] == "Begin Time Setting" or form["submit"] == "Re-Set Times" ):
             date = form['starttime']
             createAccessTimes(str(date))
-            @after_this_requestq
+            @after_this_request
             def refreshData(response):
                 updateData()
                 return response
