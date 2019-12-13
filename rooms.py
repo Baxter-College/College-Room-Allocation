@@ -19,6 +19,10 @@ def import_rooms(reader):
     sysInfo.roomListUploaded = True
     sysInfo.save()
 
+def basicImportRoom():
+    with open("dataLists/RoomClasifications.csv") as file:
+        reader = csv.DictReader(file)
+        import_rooms(reader)
 
 # takes safe room, returns string of facts about room
 def getRoomFacts(room):

@@ -17,7 +17,7 @@ from people import (
     calculatePercentageAllocated,
     import_students,
 )
-from rooms import roomOccupied, import_rooms
+from rooms import roomOccupied, import_rooms, basicImportRoom
 from mail import send_message
 import datetime
 import pytz
@@ -38,6 +38,8 @@ else:
 allData = ''
 
 db_reset()
+if (not SystemInformation.getSysInfo().roomListUploaded):
+    basicImportRoom()
 app = Flask(__name__)
 
 
