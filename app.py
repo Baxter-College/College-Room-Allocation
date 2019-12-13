@@ -86,10 +86,10 @@ def admin():
 
     if request.method == "POST":
         form = request.form
-        if (form["submit"] == "Begin Room Allocation" or form["submit"] == "Restart Room Allocation" ):
+        if (form["submit"] == "Begin Time Setting" or form["submit"] == "Re-Set Times" ):
             date = form['starttime']
             createAccessTimes(str(date))
-            @after_this_request
+            @after_this_requestq
             def refreshData(response):
                 updateData()
                 return response
