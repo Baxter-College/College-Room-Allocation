@@ -160,7 +160,7 @@ def currentRoomState():
 
 # Will return True if succsess, False if fail
 # Takes zid and roomnum
-def makeAllocation(zid, newRoomNum, subPreferences):
+def makeAllocation(zid, newRoomNum, subPreferences, extraInformation):
     student = models.Student.findStudent(zid)
     newRoom = models.Room.findRoom(newRoomNum)
 
@@ -171,7 +171,7 @@ def makeAllocation(zid, newRoomNum, subPreferences):
     if newRoom.assigned == True and newRoom.occupant.first().year > 1:
         return False
     
-    models.AllocatedRoom.makeAllocation(zid, newRoomNum, json.dumps(subPreferences), currentRoomState())
+    models.AllocatedRoom.makeAllocation(zid, newRoomNum, json.dumps(subPreferences), currentRoomState(), extraInformation)
 
     if ALLOCATE_EXAMPLE_FRESHERS:
         pass
@@ -186,6 +186,7 @@ def allocationsToCSV():
                 "Third Preference",
                 "Fourth Preference",
                 "Fifth Preference",
+                "Submission Notes",
                 "State When Submitted"]]
     
     for allocation in models.AllocatedRoom.select():
@@ -197,6 +198,7 @@ def allocationsToCSV():
                subPreferences[2],
                subPreferences[3],
                subPreferences[4],
+               allocation.extraInformation,
                allocation.currentState]
         
         rowList.append(row)

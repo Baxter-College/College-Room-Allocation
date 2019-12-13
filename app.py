@@ -55,7 +55,7 @@ def select_rooms():
 
     elif request.method == "POST":
         form = request.form
-        if form["submit"] == "secure my room":
+        if form["submit"] == "Submit my Preferences":
             zid = form["zid"]
             password = form["code"]
             firstPref = form["first_room"]
@@ -66,17 +66,19 @@ def select_rooms():
                 form["pref4"],
                 form["pref5"],
             ]
+            extraInformation = form["submissionNotes"]
             checker = checkValidRoomRequest(zid, password, firstPref, subPref)
             if checker["valid"]:
-                makeAllocation(zid, int(firstPref), subPref)
+                makeAllocation(zid, int(firstPref), subPref, extraInformation)
                 @after_this_request
                 def refreshData(response):
                     updateData()
                     return response
             return render_template("submitted.html", data=checker)
+        else:
+            return "UNKNOWN ERROR, message Tom Wright please!"
     else:
-        # TODO: major error handler
-        pass
+        return "UNKNOWN ERROR, message Tom Wright please!"
 
 @app.route("/admin", methods=["GET", "POST"])
 def admin():

@@ -229,16 +229,18 @@ class AllocatedRoom(Base):
     person = ForeignKeyField(Student, backref="allocation", unique=True)
     room = ForeignKeyField(Room, backref="assignedTo", unique=True)
     otherPreferences = TextField(null=True)
+    extraInformation = TextField(null=True)
     currentState = TextField()
 
     @classmethod
-    def makeAllocation(cls, zid, roomNumber, otherPreferences, allocationState):
+    def makeAllocation(cls, zid, roomNumber, otherPreferences, allocationState, extraInformation):
         try:
             newAllocation = cls.create(
                 person = zid,
                 room = roomNumber,
                 otherPreferences = otherPreferences,
-                currentState = allocationState
+                currentState = allocationState,
+                extraInformation = extraInformation
             )
 
             return newAllocation
@@ -263,6 +265,6 @@ def dbWipe():
 
 def db_reset():
     db.connect()
-    # db.drop_tables([Student, Floor, Room, AllocatedRoom, SystemInformation])
+    #db.drop_tables([Student, Floor, Room, AllocatedRoom, SystemInformation])
     db.create_tables([Student, Floor, Room, AllocatedRoom, SystemInformation], safe=True)
     db.close()
