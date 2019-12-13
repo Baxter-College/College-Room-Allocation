@@ -45,7 +45,8 @@ block content %}
     </form>
   </div>
   <!-- upload files -->
-  <div class="column is-3">
+  <!-- Upload room: -->
+  <!-- <div class="column is-3">
       <form class="form"
             name="upload"
             action="/admin/upload/rooms"
@@ -82,15 +83,15 @@ block content %}
           </div>
         </div>
       </form>
-    </div>
+    </div> -->
     <div class="column is-3">
-        <form class="form"
+          <form class="form"
               name="upload"
-              method="post"
               action="/admin/upload/people"
-              enctype="multipart/form-data"
+              method="post"
+              enctype="multipart/form-data">
           <div class="field">
-            <label for="uploadFiless" class="label">Upload STUDENT List</label>
+            <label for="uploadFiles" class="label">Upload STUDENT List</label>
             <div class="control">
                 <input
                   type="file"
@@ -98,6 +99,7 @@ block content %}
                   name="file"
                   accept=".csv"
                 />
+            </div>
           </div>
           <div class="field">
             <div class="control">
