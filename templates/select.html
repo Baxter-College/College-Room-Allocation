@@ -23,6 +23,8 @@
           method="POST"
         >
           <div class="field">
+            <div class="columns is-centered">
+            <div class="column is-6">
             <label for="zid" class="label">ZID:</label>
     
             <div class="control">
@@ -34,6 +36,13 @@
                 oninput="zid_update(event)"
                 class="input"
               />
+            </div>
+            </div>
+              <div class="column is-6">
+                <label for="zid" class="label">Your Start Time:</label>
+                <div class="control" id='userStartTime'>
+                  </div>
+              </div>
             </div>
           </div>
     
@@ -174,11 +183,18 @@
       var True = true;
       var False = false;
       var data = {{data|safe}};
-      <!-- //console.log(data); -->
+      //console.log(data);
       var display_floor = 1;
       var gender = "";
       function get_gender(zid) {
-          return data["ZIDS"][zid];
+          return data["ZIDS"][zid]["gender"];
+      }
+      function get_start_time(zid) {
+        if (valid_zid(zid)){
+            return data["ZIDS"][zid]["startDate"]
+          } else{
+            return ""
+          }
       }
       function get_rooms(zid) {
           var gender = get_gender(zid);
@@ -216,7 +232,8 @@
           return zid in data["ZIDS"]
       }
       function zid_update(evt) {
-          var zid = evt.currentTarget.value
+        var zid = evt.currentTarget.value
+        document.getElementById('userStartTime').innerHTML = get_start_time(zid)
           if (!valid_zid(zid)) {
               evt.currentTarget.style.color = "red"
           } else {
@@ -229,7 +246,7 @@
           var element = document.getElementById(elementId);
           element.parentNode.removeChild(element);
       }
-    
+
       function validate_form(){
           alert("We still need to write the validate form function!")
           // TODO: validate the form before send

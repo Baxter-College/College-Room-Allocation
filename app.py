@@ -89,6 +89,10 @@ def admin():
         if (form["submit"] == "Begin Room Allocation" or form["submit"] == "Restart Room Allocation" ):
             date = form['starttime']
             createAccessTimes(str(date))
+            @after_this_request
+            def refreshData(response):
+                updateData()
+                return response
         elif (form["submit"] == "Download File"):
             si = StringIO()
             cw = csv.writer(si)
@@ -202,7 +206,7 @@ def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
         else:
             roomNum = int(firstPreference)
             roomList = listAvailableRooms(
-                (math.floor(roomNum / 100)), getStudentList()[zid], True
+                (math.floor(roomNum / 100)), getStudentList()[zid]['gender'], True
             )
             if not roomList[firstPreference]["available"]:
                 errors.append("Cannot allocate room due to rule")

@@ -5,13 +5,13 @@ from playhouse.shortcuts import model_to_dict
 import json
 
 def getStudentList():
-    studentListGender = {}
+    studentListData = {}
     studentList = models.Student.select().where(models.Student.year > 1)
-    
     for student in studentList.iterator():
-        studentListGender[student.zID] = student.gender
+        timeString = student.startTime.strftime("%I:%M%p %d/%m/%Y")
+        studentListData[student.zID] = {"gender":student.gender, "startDate":timeString}
     
-    return studentListGender
+    return studentListData
 
 def import_students(reader):
     for row in reader:
