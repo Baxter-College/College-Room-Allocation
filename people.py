@@ -3,6 +3,9 @@ import pytz
 import models
 from playhouse.shortcuts import model_to_dict
 import json
+import random
+import string
+import mail
 
 def getStudentList():
     studentListData = {}
@@ -147,3 +150,14 @@ def createAccessTimes(startTime):
 
     # for s in studentList:
     #     print(s.zID,s.roomPoints,s.startTime)
+
+
+def sendEmails():
+    for s in models.Student.select():
+        zid = s.zID
+        password = ''.join([random.choice(string.ascii_letters + string.digits) for n in xrange(8)])
+        s.password = password
+        s.save()
+        startTime = student.startTime.strftime("%I:%M%p %d/%m/%Y")
+
+        mail.send_message(f'{zid}@mailinator.com', zid, startTime, password)

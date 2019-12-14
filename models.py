@@ -17,7 +17,7 @@ else:
     
     import getpass
     username = getpass.getuser()
-    if (username == "twright" or username == "tdcwr"):
+    if (username == "twright" or username == "tdcwr" or username == "tomhill"):
         db = SqliteDatabase('test1.db')
     else:
         from dotenv import load_dotenv # pylint: disable=import-error

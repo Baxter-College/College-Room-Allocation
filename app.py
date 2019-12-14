@@ -10,7 +10,8 @@ from people import (
     createAccessTimes,
     checkValidRoomType,
     personAllocatedList,
-    model_to_dict
+    model_to_dict,
+    sendEmails
 )
 from people import (
     getStudentsByRoomPoints,
@@ -170,8 +171,8 @@ def sendMail():
     sysInfo = SystemInformation.getSysInfo()
     sysInfo.mailOutDone = True
     sysInfo.save()
-
-    # TODO: PUT SEND EMAIL HERE
+    
+    people.sendEmails() # send password / times emails
 
     return "MAILOUT SUCCESSFUL"
 
