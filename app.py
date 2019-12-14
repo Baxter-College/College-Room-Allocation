@@ -168,11 +168,11 @@ def allocated():
 
 @app.route("/admin/sendMail", methods=["GET"])
 def sendMail():
+    sendEmails() # send password / times emails
+
     sysInfo = SystemInformation.getSysInfo()
     sysInfo.mailOutDone = True
     sysInfo.save()
-    
-    people.sendEmails() # send password / times emails
 
     return "MAILOUT SUCCESSFUL"
 
