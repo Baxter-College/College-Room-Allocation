@@ -5,8 +5,10 @@ EQUALISE_SENIOR_INTERFLOOR_NUMBERS = True
 # RULE #2: Balance the genders of a floor
 EQUALISE_ONFLOOR_GENDER_BALANCE = True
 GENDER_BALANCE_PERCENTAGE_LENIENCY = 0.25
-# RULE #3: At lease 1 of each gender in each sub-division
+# RULE #3: At least 1 of each gender in each sub-division
 ALTERNATING_GENDERS_ROOM_SEPERATION = True
+# RULE #8: At least 1 fresher in each sub-division
+SUB_DIVISION_FRESHER_BALANCE = True
 # RULE #4: Maximum number of seniors on shared balcs
 NUMBER_OF_SENIORS_FRONT_BALC = 2
 # RULE #5: Keep the number of males and females on a front balc equal
@@ -94,9 +96,15 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
             
             else:
                 if ALTERNATING_GENDERS_ROOM_SEPERATION:
-                    if ((divInfo["numOfRooms"] - currGenderCount)/divInfo["numOfRooms"] <= 0.5):
+                    if ((divInfo["numOfRooms"] - currGenderCount)/divInfo["numOfRooms"] <= 0.25):
                         availableRooms[roomNum]["available"] = False
                         availableRooms[roomNum]["reason"] = "Too many people in this sub-divison. RULE #3"
+                        continue
+                
+                if SUB_DIVISION_FRESHER_BALANCE:
+                    if ((divInfo["numOfRooms"] - divInfo["numSenior"])/divInfo["numOfRooms"] <= 0.25):
+                        availableRooms[roomNum]["available"] = False
+                        availableRooms[roomNum]["reason"] = "Too many seniors in this sub-divison. RULE #8"
                         continue
         #print(f"room {roomNum} took {dt.now() - cur} time")
                 
