@@ -5,15 +5,28 @@
       <div class="column is-6">
         <h1 class="title is-4 is-centered">Select Rooms</h1>
         <br />
+        <label class="label">DISCLAIMER:</label>
         <p>
           <i
-            >College is about the social life! Your room doesn't really
-            mattress...</i
-          >
+            >By submitting the below form you acknowledge that you are not guaranteed your selected room.
+            The Dean of the college reserves the right to make any changes to the room distrobution without warning
+            or the need of a reason.<br><br>
+            
+            The order of this allocation system has been calculated through the use of
+            your room points. You will be able to submit any time from your allocated start time.
+            This means if you want to submitget a room near your friends, you can wait until you can both submi.
+            <br>You are able to send your password to a friend to fill out this form for you if you
+            will be unavailable, however the college accepts no responsibility for incorrect submissions.
+            <br><br>
+            <strong style="color: #ff0000;">BE ADVISED:</strong> You are only able to submit this form <strong style="color: #ff0000;">ONCE</strong>.
+            Once you have clicked submit, you cannot change it. Choose wisely!
+            <br>If you need any clarification on what a section means, click the title.
+            <br> <strong>If you have any problems, please message Tom Wright or Rohan Maloney</strong>
+            </i>
         </p>
       </div>
     </div>
-    
+    <hr>
     <div class="columns is-centered">
       <div class="column is-6">
         <form
@@ -31,7 +44,7 @@
               <input
                 type="text"
                 id="zid"
-                placeholder="enter your zid"
+                placeholder="Enter your zID"
                 name="zid"
                 oninput="zid_update(event)"
                 class="input"
@@ -39,45 +52,52 @@
             </div>
             </div>
               <div class="column is-6">
-                <label for="zid" class="label">Your Start Time:</label>
-                <div class="control" id='userStartTime'>
-                  </div>
+                <div onclick="showInfoPopup('startTimeInfo')">
+                  <label for="zid" class="label">Your Start Time:</label>
+                </div>
+                <div class="control" id='userStartTime'></div>
               </div>
             </div>
           </div>
     
           <div class="field">
-            <label for="code" class="label">Code:</label>
+            <div onclick="showInfoPopup('passwordInfo')">
+              <label for="code" class="label">Password:</label>
+            </div>
             <div class="control">
               <input
                 class="input"
                 type="text"
                 id="code"
-                placeholder="enter your code"
+                placeholder="Enter your password"
                 name="code"
               />
             </div>
           </div>
     
           <div class="field">
-            <label for="first_room" class="label">Secure a room:</label>
+            <div onclick="showInfoPopup('secureRoomInfo')">
+              <label for="first_room" class="label">Secure a room:</label>
+            </div>
             <div class="control">
               <input
                 type="number"
                 id="first_room"
-                placeholder="which room do you want"
+                placeholder="Enter an avaliable room that you want"
                 name="first_room"
                 class="input"
               />
             </div>
           </div>
     
-          <h3>Other preferences:</h3>
+          <div onclick="showInfoPopup('otherPrefInfo')">
+            <label class="label">Other preferences:</label>
+          </div>
           <div class="control">
             <input
               type="number"
               id="pref1"
-              placeholder="enter first other preference"
+              placeholder="Enter First other preference"
               name="pref1"
               class="input"
               style="margin-top:10px;"
@@ -88,7 +108,7 @@
             <input
               type="number"
               id="pref2"
-              placeholder="enter second other preference"
+              placeholder="Enter Second other preference"
               name="pref2"
               class="input"
               style="margin-top:10px;"
@@ -99,7 +119,7 @@
             <input
               type="number"
               id="pref3"
-              placeholder="enter third other preference"
+              placeholder="Enter Third other preference"
               name="pref3"
               class="input"
               style="margin-top:10px;"
@@ -110,7 +130,7 @@
             <input
               type="number"
               id="pref4"
-              placeholder="enter fourth other preference"
+              placeholder="Enter Fourth other preference"
               name="pref4"
               class="input"
               style="margin-top:10px;"
@@ -121,11 +141,14 @@
             <input
               type="number"
               id="pref5"
-              placeholder="enter fifth other preference"
+              placeholder="Enter Fifth other preference"
               name="pref5"
               class="input"
               style="margin-top:10px;"
             />
+          </div>
+          <div onclick="showInfoPopup('otherPrefInfo')">
+            <label class="label">Enter any other information:</label>
           </div>
           <div class="control">
             <input
@@ -191,6 +214,7 @@
     </div>
     
     {% endfor %}
+
     
     <script type="text/javascript">
       var True = true;
@@ -258,6 +282,23 @@
           // Removes an element from the document
           var element = document.getElementById(elementId);
           element.parentNode.removeChild(element);
+      }
+
+      function showInfoPopup(infoSection){
+        var message = ''
+        if (infoSection == "startTimeInfo"){
+          message = "Once you have put in your zID, you will be able to see the time from which you can submit your room preferences. It will not work before then."
+        }else if (infoSection == "passwordInfo"){
+          message = "Please enter your password that was attached in your email."
+        }else if (infoSection == "secureRoomInfo"){
+          message = "This room has to be one which is currently avaliable (see the list below). THIS ROOM IS NOT A GUARANTEE"
+        }else if (infoSection == "otherPrefInfo"){
+          message = "Please enter any other rooms you would be happy with if a change happened. You should fill them all out, or you might get a room you didn't want."
+        }else if (infoSection == "otherInfo"){
+          message = "Please put any other information here, Eg I want to be with ABC friend. This information will only be used if your room needs changing"
+        }
+
+        alert(message)
       }
 
       function validate_form(){
