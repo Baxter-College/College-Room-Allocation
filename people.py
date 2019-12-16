@@ -114,8 +114,7 @@ def calculatePercentageAllocated():
     return (assigned/total * 100)
 
 # takes a startTime string in format "10:30AM 12/11/2019"
-def createAccessTimes(startTime):
-    seperationMinutes = 30
+def createAccessTimes(startTime, seperationMinutes=30):
     def addTime(currDate, addMinutes):
         dayStart = "09:00AM"
         dayEnd = "10:00PM"

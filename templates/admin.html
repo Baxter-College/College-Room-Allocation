@@ -29,6 +29,12 @@ block content %}
         </div>
       </div>
       <div class="field">
+        <label for="timeSeperation" class="label">Seperation between timeslots</label>
+        <div class="control">
+          <input type="number" name="timeSeperation" placeholder="Seperation in minutes" />
+        </div>
+      </div>
+      <div class="field">
         <div class="control">
           {% if info["startTimeSet"] == False %}
             <input type="submit" class="button is-success" name="submit" value = "Begin Time Setting">
@@ -208,7 +214,9 @@ block content %}
 
 <script>
   // Check percentage allocated
-  setInterval(function() {
+  var maxSeconds = 500;
+  var currSeconds = 0;
+  var updateAllocateBar = setInterval(function() {
     fetch("/admin/allocated")
       .then(res => {
         return res.json();
@@ -219,6 +227,10 @@ block content %}
           .getElementById("progressBar")
           .setAttribute("value", res["allocated"]);
       });
+
+      currSeconds += 10
+      if (currSeconds > maxSeconds) clearInterval(updateAllocateBar);
+
   }, 10000);
 
   function checkBeforeDBWipe(){
