@@ -19,7 +19,6 @@ from people import (
     import_students,
 )
 from rooms import roomOccupied, import_rooms, basicImportRoom
-from mail import send_message
 import datetime
 import pytz
 import json
@@ -169,7 +168,7 @@ def allocated():
 
 @app.route("/admin/sendMail", methods=["GET"])
 def sendMail():
-    sendEmails() # send password / times emails
+    sendEmails(app) # send password / times emails
 
     sysInfo = SystemInformation.getSysInfo()
     sysInfo.mailOutDone = True
