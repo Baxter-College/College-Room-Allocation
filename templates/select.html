@@ -38,8 +38,9 @@
           <div class="field">
             <div class="columns is-centered">
             <div class="column is-6">
-            <label for="zid" class="label">ZID:</label>
-    
+            <div onclick="showInfoPopup('zidInfo')">
+              <label for="zid" class="label">ZID:</label>
+            </div>
             <div class="control">
               <input
                 type="text"
@@ -259,9 +260,9 @@
               floor = document.getElementById("floor" + floor);
               floor.className = "";
               if (count > 0) {
-                  floor.className = "available";
+                  floor.className = "tablinks available";
               } else {
-                  floor.className = "unavailable";
+                  floor.className = "tablinks unavailable";
               }
           }
       }
@@ -296,6 +297,8 @@
           message = "Please enter any other rooms you would be happy with if a change happened. You should fill them all out, or you might get a room you didn't want."
         }else if (infoSection == "otherInfo"){
           message = "Please put any other information here, Eg I want to be with ABC friend. This information will only be used if your room needs changing"
+        }else if (infoSection == "zidInfo"){
+          message = "Please enter you zID including the z, eg: z1234567"
         }
 
         alert(message)
