@@ -79,7 +79,7 @@ def checkValidTime(zid):
     if (person != False):
         # # in format "10:30AM 12/11/2019"
         personStartTime = person.startTime
-        pytz.timezone("Australia/Sydney").localize(personStartTime)
+        personStartTime = pytz.timezone("Australia/Sydney").localize(personStartTime)
         # tz = pytz.timezone('Australia/Sydney')
         # startTime = datetime.datetime.strptime(startTime,"%I:%M%p %d/%m/%Y")
         # tz.localize(startTime)
