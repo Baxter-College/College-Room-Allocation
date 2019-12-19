@@ -20,7 +20,6 @@ from people import (
 )
 from rooms import roomOccupied, import_rooms, basicImportRoom
 import datetime
-import pytz
 import json
 import math
 from models import db_reset, SystemInformation, dbWipe
@@ -192,8 +191,7 @@ def wipeDB():
 
 def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
     errors = []
-    time = datetime.datetime.now()
-    pytz.timezone("Australia/Sydney").localize(time)
+    
     if (SystemInformation.studentListUploaded and SystemInformation.roomListUploaded):
         personAllocation = checkPersonAllocated(zid)
         if personAllocation["allocated"]:
@@ -203,7 +201,7 @@ def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
 
         if not checkCorrectPassword(zid, password):
             errors.append("incorrect password")
-        if not checkValidTime(zid, time):
+        if not checkValidTime(zid):
             errors.append("You tried to submit before your submit time")
 
         validRoom = roomOccupied(firstPreference)

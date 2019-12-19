@@ -188,18 +188,21 @@ def makeAllocation(zid, newRoomNum, subPreferences, extraInformation):
     return True
 
 def allocationsToCSV():
-    rowList = [["zID",
+    rowList = [["Submission Time",
+                "zID",
                 "Allocation",
-                "Second Preference",
-                "Third Preference",
-                "Fourth Preference",
-                "Fifth Preference",
+                "First Sub-Preference",
+                "Second Sub-Preference",
+                "Third Sub-Preference",
+                "Fourth Sub-Preference",
+                "Fifth Sub-Preference",
                 "Submission Notes",
                 "State When Submitted"]]
     
     for allocation in models.AllocatedRoom.select():
         subPreferences = json.loads(allocation.otherPreferences)
-        row = [allocation.person,
+        row = [allocation.timeOfAllocation,
+               allocation.person,
                allocation.room,
                subPreferences[0],
                subPreferences[1],

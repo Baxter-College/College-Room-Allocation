@@ -72,15 +72,18 @@ def checkCorrectPassword(zid, password):
     return False
 
 
-def checkValidTime(zid, time):
+def checkValidTime(zid):
     person = models.Student.findStudent(zid)
-
+    time = datetime.datetime.now()
+    pytz.timezone("Australia/Sydney").localize(time)
     if (person != False):
         # # in format "10:30AM 12/11/2019"
+        personStartTime = person.startTime
+        pytz.timezone("Australia/Sydney").localize(personStartTime)
         # tz = pytz.timezone('Australia/Sydney')
         # startTime = datetime.datetime.strptime(startTime,"%I:%M%p %d/%m/%Y")
         # tz.localize(startTime)
-        if (person.startTime <= time):
+        if (personStartTime <= time):
             return True
 
             
