@@ -157,7 +157,12 @@ def createAccessTimes(startTime, seperationMinutes=30):
 
 
 def sendEmails(app):
-    for s in models.Student.select():
+    print("SENDING EMAILS:")
+    stuList = models.Student.select()
+    i = 1
+    length = stuList.count()
+    for s in stuList:
+        print(f"Email to {s.zID}. {i} of {length}")
         zid = s.zID
         password = ''.join([random.choice(string.ascii_letters + string.digits) for n in range(8)])
         s.password = password
@@ -165,3 +170,4 @@ def sendEmails(app):
         startTime = s.startTime.strftime("%I:%M%p %d/%m/%Y")
 
         mail.sendEmail(app, f'{zid}@mailinator.com', password, startTime)
+        i+=1
