@@ -168,7 +168,7 @@ def sendEmails(app):
         s.password = password
         s.save()
         startTime = s.startTime.strftime("%I:%M%p %d/%m/%Y")
-        mail.sendEmail(app, f'{zid}@mailinator.com', password, startTime)
+        mail.sendEmail(app, f'{zid}@unsw.edu.au', password, startTime)
         i+=1
     
     print("EMAILING DONE!")
