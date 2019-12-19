@@ -83,6 +83,7 @@ def checkValidTime(zid):
         # tz = pytz.timezone('Australia/Sydney')
         # startTime = datetime.datetime.strptime(startTime,"%I:%M%p %d/%m/%Y")
         # tz.localize(startTime)
+        print(f"TIME COMPARE: person: {personStartTime}, now: {time}")
         if (personStartTime <= time):
             return True
 
