@@ -225,7 +225,7 @@ class Student(Base):
             return True
 
 class AllocatedRoom(Base):
-    timeOfAllocation = DateField(default=datetime.datetime.now())
+    timeOfAllocation = DateTimeField(default=datetime.datetime.now())
     person = ForeignKeyField(Student, backref="allocation", unique=True)
     room = ForeignKeyField(Room, backref="assignedTo", unique=True)
     otherPreferences = TextField(null=True)
