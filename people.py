@@ -171,3 +171,5 @@ def sendEmails(app):
 
         mail.sendEmail(app, f'{zid}@mailinator.com', password, startTime)
         i+=1
+    
+    print("EMAILING DONE!")
