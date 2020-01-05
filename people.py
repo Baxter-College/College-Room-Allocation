@@ -138,9 +138,7 @@ def createAccessTimes(startTime, seperationMinutes=30):
             return newTime
 
     studentList = models.Student.select().order_by(models.Student.roomPoints.desc())
-    tz = pytz.timezone("Australia/Sydney")
     newTime = datetime.datetime.strptime(startTime, "%Y-%m-%dT%H:%M")
-    tz.localize(newTime)
 
     lastRoomPoints = studentList.get().roomPoints
     for s in studentList.iterator():
