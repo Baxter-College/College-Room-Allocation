@@ -132,7 +132,7 @@ def createAccessTimes(startTime, seperationMinutes=30):
         
         print(f"NT: {newTime}")
 
-        if newTime >= dayEnd:
+        if newTime.time() >= dayEnd.time():
             print("Access time: new day")
             currDate += datetime.timedelta(days=1)
             currDate = currDate.replace(hour=dayStart.hour, minute=dayStart.minute)
