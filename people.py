@@ -130,11 +130,15 @@ def createAccessTimes(startTime, seperationMinutes=30):
         dayEnd = datetime.datetime.strptime(dayEnd, "%I:%M%p")
         newTime = currDate + datetime.timedelta(minutes=addMinutes)
         
+        print(f"NT: {newTime}")
+
         if newTime >= dayEnd:
+            print("Access time: new day")
             currDate += datetime.timedelta(days=1)
             currDate = currDate.replace(hour=dayStart.hour, minute=dayStart.minute)
             return currDate
         else:
+            print("Access time: new time")
             return newTime
 
     studentList = models.Student.select().order_by(models.Student.roomPoints.desc())
