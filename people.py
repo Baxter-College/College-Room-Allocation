@@ -126,11 +126,11 @@ def createAccessTimes(startTime, seperationMinutes=30):
         dayStart = "09:00AM"
         dayEnd = "10:00PM"
 
-        dayStart = pytz.timezone("Australia/Sydney").localize(datetime.datetime.strptime(dayStart, "%I:%M%p"))
-        dayEnd = pytz.timezone("Australia/Sydney").localize(datetime.datetime.strptime(dayEnd, "%I:%M%p"))
+        dayStart = datetime.datetime.strptime(dayStart, "%I:%M%p")
+        dayEnd = datetime.datetime.strptime(dayEnd, "%I:%M%p")
         newTime = currDate + datetime.timedelta(minutes=addMinutes)
         
-        if newTime.timetz() >= dayEnd.timetz():
+        if newTime >= dayEnd:
             currDate += datetime.timedelta(days=1)
             currDate = currDate.replace(hour=dayStart.hour, minute=dayStart.minute)
             return currDate
