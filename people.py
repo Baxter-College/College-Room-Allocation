@@ -19,28 +19,30 @@ def getStudentList():
 def import_students(reader):
     for row in reader:
         zid = row["zID"]
+        if (zid == ''):
+            continue;
         # name = row["StudentName"]
         year = int(row["year"])
         room_points = int(row["roomPoints"])
-        gender = row["gender"]
-        password = row["password"]
-        startTime = row["startTime"]
+        gender = row["gender"].lower()
+        # password = row["password"]
+        # startTime = row["startTime"]
         ensuite = row["roomType"]
 
-        if (ensuite == "ensuite"):
+        if (ensuite == "Single Room with Ensuite"):
             ensuite = True
         else:
             ensuite = False
 
-        if startTime == "":
-            startTime = datetime.datetime.strptime("2050", "%Y")
-        else:
-            # in format "10:30AM 12/11/2019"
-            tz = pytz.timezone("Australia/Sydney")
-            startTime = datetime.datetime.strptime(startTime, "%I:%M%p %d/%m/%Y")
-            tz.localize(startTime)
+        # if startTime == "":
+        startTime = datetime.datetime.strptime("2050", "%Y")
+        # else:
+        #     # in format "10:30AM 12/11/2019"
+        #     tz = pytz.timezone("Australia/Sydney")
+        #     startTime = datetime.datetime.strptime(startTime, "%I:%M%p %d/%m/%Y")
+        #     tz.localize(startTime)
 
-        models.Student.createStudent(zid, year, gender, ensuite, room_points, password, startTime)
+        models.Student.createStudent(zid, year, gender, ensuite, room_points, "aisdugaoigyioag", startTime)
     
     sysInfo = models.SystemInformation.getSysInfo()
     sysInfo.studentListUploaded = True
@@ -79,7 +81,7 @@ def checkValidTime(zid):
         # # in format "10:30AM 12/11/2019"
         personStartTime = person.startTime
         # personStartTime = pytz.timezone("Australia/Sydney").localize(personStartTime)
-        tz = pytz.timezone('Australia/Sydney')
+        # tz = pytz.timezone('Australia/Sydney')
         nowTime = datetime.datetime.now()
         # personStartTime = datetime.datetime.strptime(person.startTime.strftime("%I:%M%p %d/%m/%Y"),"%I:%M%p %d/%m/%Y")
         # tz.localize(personStartTime)
@@ -160,7 +162,7 @@ def sendEmails(app):
     print("SENDING EMAILS:")
     stuList = models.Student.select()
     i = 1
-    length = stuList.count()
+    length = stuList.count() # pylint: disable=no-value-for-parameter
     for s in stuList:
         print(f"Email to {s.zID}. {i} of {length}")
         zid = s.zID
