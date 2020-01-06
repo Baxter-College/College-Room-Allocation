@@ -252,6 +252,7 @@ class SystemInformation(Base):
     mailOutDone =  BooleanField(default=False)
     roomListUploaded = BooleanField(default=False)
     studentListUploaded =  BooleanField(default=False)
+    systemIsRunning = BooleanField(default=True)
     
 
     @classmethod
@@ -265,6 +266,6 @@ def dbWipe():
 
 def db_reset():
     db.connect()
-    #db.drop_tables([Student, Floor, Room, AllocatedRoom, SystemInformation])
+    # db.drop_tables([Student, Floor, Room, AllocatedRoom, SystemInformation])
     db.create_tables([Student, Floor, Room, AllocatedRoom, SystemInformation], safe=True)
     db.close()

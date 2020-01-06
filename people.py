@@ -162,7 +162,7 @@ def createAccessTimes(startTime, seperationMinutes=30):
 
 def sendEmails(app):
     print("SENDING EMAILS:")
-    stuList = models.Student.select()
+    stuList = models.Student.select().order_by(models.Student.roomPoints.desc())
     i = 1
     length = stuList.count() # pylint: disable=no-value-for-parameter
     for s in stuList:
