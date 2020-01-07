@@ -51,7 +51,7 @@ def import_students(reader):
 def checkPersonAllocated(zid):
     person = models.Student.findStudent(zid)
     
-    if (person != None):
+    if (person != False):
         if (person.assigned):
             return {"allocated":True, "room":person.allocation.get().room}
     
