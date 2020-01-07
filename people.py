@@ -48,6 +48,14 @@ def import_students(reader):
     sysInfo.studentListUploaded = True
     sysInfo.save()
 
+def studentExists(zid):
+    person = models.Student.findStudent(zid)
+    
+    if (person == False):
+        return False
+    
+    return True
+
 def checkPersonAllocated(zid):
     person = models.Student.findStudent(zid)
     

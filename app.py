@@ -17,6 +17,7 @@ from people import (
     getStudentsByRoomPoints,
     calculatePercentageAllocated,
     import_students,
+    studentExists
 )
 from rooms import roomOccupied, import_rooms, basicImportRoom
 import datetime
@@ -202,6 +203,9 @@ def checkValidRoomRequest(zid, password, firstPreference, subPreferences):
     
     if (not SystemInformation.getSysInfo().systemIsRunning):
         return {"valid": False, "errors": ["The Allocation system is paused, this is probably because of an error in the system that we are trying to fix. No one is currently able to choose their rooms. We will post on the Baxter 2019 Facebook page shortly."]}
+
+    if (not studentExists(zid)):
+        return {"valid": False, "errors": ["zID is incorrect. Message Tom, Tom or Rohan or try again"]}
 
     if (SystemInformation.studentListUploaded and SystemInformation.roomListUploaded):
         personAllocation = checkPersonAllocated(zid)
