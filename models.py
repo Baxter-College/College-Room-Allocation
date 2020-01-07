@@ -225,7 +225,7 @@ class Student(Base):
             return True
 
 class AllocatedRoom(Base):
-    timeOfAllocation = DateTimeField(default=datetime.datetime.now())
+    timeOfAllocation = DateTimeField()
     person = ForeignKeyField(Student, backref="allocation", unique=True)
     room = ForeignKeyField(Room, backref="assignedTo", unique=True)
     otherPreferences = TextField(null=True)
@@ -236,6 +236,7 @@ class AllocatedRoom(Base):
     def makeAllocation(cls, zid, roomNumber, otherPreferences, allocationState, extraInformation):
         try:
             newAllocation = cls.create(
+                timeOfAllocation = datetime.datetime.now(),
                 person = zid,
                 room = roomNumber,
                 otherPreferences = otherPreferences,
