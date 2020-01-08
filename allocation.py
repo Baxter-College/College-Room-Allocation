@@ -108,8 +108,6 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
                         continue
         #print(f"room {roomNum} took {dt.now() - cur} time")
 
-    if floorNum == 3:         
-        print(availableRooms[310])            
     outp = {}
     for key in availableRooms:
         outp[str(key)] = availableRooms[key]
@@ -199,8 +197,10 @@ def allocationsToCSV():
                 "Fifth Sub-Preference",
                 "Submission Notes",
                 "State When Submitted"]]
-    
+    studentList = []
     for allocation in models.AllocatedRoom.select():
+        studentList.append(allocation.person.zID)
+
         subPreferences = json.loads(allocation.otherPreferences)
         row = [allocation.timeOfAllocation,
                allocation.person,
@@ -214,4 +214,19 @@ def allocationsToCSV():
                allocation.currentState]
         
         rowList.append(row)
+    for student in models.Student.select():
+        if (not student.zID in studentList):
+            row = ['',
+                student.zID,
+                "Not Selected",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""]
+    
+            rowList.append(row)
+
     return rowList
