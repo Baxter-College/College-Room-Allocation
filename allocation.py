@@ -107,8 +107,9 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
                         availableRooms[roomNum]["reason"] = "Too many seniors in this sub-divison. RULE #8"
                         continue
         #print(f"room {roomNum} took {dt.now() - cur} time")
-                
-    print(availableRooms[310])            
+
+    if floorNum == 3:         
+        print(availableRooms[310])            
     outp = {}
     for key in availableRooms:
         outp[str(key)] = availableRooms[key]
