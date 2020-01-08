@@ -20,7 +20,7 @@ def import_students(reader):
     for row in reader:
         zid = row["zID"]
         if (zid == ''):
-            continue;
+            continue
         # name = row["StudentName"]
         year = int(row["year"])
         room_points = int(row["roomPoints"])
