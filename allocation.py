@@ -63,7 +63,7 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
                     continue
 
             if EQUALISE_ONFLOOR_SENIOR_GENDER_BALANCE and isSenior:
-                if seniorGenderCount >= floorSeniorGenderCapacity
+                if seniorGenderCount >= floorSeniorGenderCapacity:
                     availableRooms[roomNum]["available"] = False
                     availableRooms[roomNum]["reason"] = "Too many seniors on this floor of your gender. RULE #6"
                     continue
