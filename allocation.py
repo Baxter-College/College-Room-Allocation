@@ -108,7 +108,7 @@ def listAvailableRooms(floorNum, gender=None, isSenior = False):
                         continue
         #print(f"room {roomNum} took {dt.now() - cur} time")
                 
-                
+    print(availableRooms[310])            
     outp = {}
     for key in availableRooms:
         outp[str(key)] = availableRooms[key]
